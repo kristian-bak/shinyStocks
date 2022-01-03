@@ -11,6 +11,7 @@ mod_overview_ui <- function(id){
   ns <- NS(id)
   
   fluidPage(
+    shinyjs::useShinyjs(),
     fluidRow(
       actionButton(
         inputId = ns("go_show_example"), 
@@ -43,6 +44,21 @@ mod_overview_ui <- function(id){
     htmltools::br(),
     DT::dataTableOutput(
       outputId = ns("table_portfolio")
+    ), 
+    htmltools::br(),
+    fluidRow(
+      shinyjs::hidden(
+        tagList(
+          actionButton(
+            inputId = ns("go_load"), 
+            label = "Load portfolio"
+          )
+        )
+      )
+    ), 
+    htmltools::br(),
+    fluidRow(
+      uiOutput(outputId = ns("panel_analytics"))
     )
   )
 }
@@ -55,85 +71,26 @@ mod_overview_server <- function(id){
     ns <- session$ns
     
     react_var <- reactiveValues(
-      df_portfolio = data.frame()
+      df_portfolio = NULL
     )
+    
+    observeEvent(input$go_show_example, {
+      
+      react_var$df_portfolio <- dplyr::tribble(
+        ~Stock,              ~Ticker, ~Date,        ~Price, ~Stocks, ~Country, ~ETF, ~Type,    ~Cap,
+        "Tesla, Inc.",       "TSLA",  "2021-11-15", 1018,   10,      "USA",    "NO", "Growth", "Large",
+        "Johnson & Johnson", "JNJ",   "2021-12-14", 168,    50,      "USA",    "NO", "Value",  "Large",
+      )
+      
+    })
     
     observeEvent(input$go_add, {
       
       showModal(
         ui = modalDialog(
-          fluidPage(
-            fluidRow(
-              column(4, 
-                     textInput(
-                       inputId = ns("type_stock"), 
-                       label = "Stock name"
-                     )
-              ),
-              column(4, 
-                     textInput(
-                       inputId = ns("type_ticker"), 
-                       label = "Ticker"
-                      )
-              )
-            ),
-            fluidRow(
-              column(4, 
-                     dateInput(
-                       inputId = ns("date_first_buy"), 
-                       label = "First buy day"
-                     )
-              ),
-              column(4, 
-                     numericInput(
-                       inputId = ns("num_buy_price"), 
-                       label = "Average buy price", 
-                       value = NA, 
-                       min = 0, 
-                       max = Inf
-                     )
-              )
-            ),
-            fluidRow(
-              column(4, 
-                     selectInput(
-                       inputId = ns("select_country"), 
-                       label = "Country", 
-                       choices = c("USA", "Germany", "Denmark")
-                       )
-              ),
-              column(4, 
-                     selectInput(
-                       inputId = ns("select_etf"), 
-                       label = "ETF", 
-                       choices = c("Yes", "No")
-                     )
-              )
-            ),
-            fluidRow(
-              column(4, 
-                     selectInput(
-                       inputId = ns("select_type"), 
-                       label = "Stock type", 
-                       choices = c("Growth", "Value")
-                     )
-              ),
-              column(4, 
-                     selectInput(
-                       inputId = ns("select_cap"), 
-                       label = "Market cap", 
-                       choices = c("Large", "Mid", "Small")
-                     )
-              )
-            ),
-            fluidRow(
-              actionButton(
-                inputId = ns("go_submit"), 
-                label = "Submit"
-              )
-            )
-          ), 
-          easyClose = TRUE),
+          add_stock_modal(ns = ns), 
+          easyClose = TRUE
+        ),
         session = session
       )
       
@@ -146,6 +103,7 @@ mod_overview_server <- function(id){
         "Ticker"     = input$type_ticker,
         "Date"       = input$date_first_buy,
         "Price"      = input$num_buy_price,
+        "Stocks"     = input$num_n_stocks,
         "Country"    = input$select_country,
         "ETF"        = input$select_etf,
         "Stock_type" = input$select_type,
@@ -190,6 +148,60 @@ mod_overview_server <- function(id){
     output$table_portfolio <- DT::renderDataTable(
       expr = DT::datatable(react_var$df_portfolio, options = list(dom = "t"))
     )
+    
+    observe({
+      
+      if (!is.null(react_var$df_portfolio)) {
+        shinyjs::show(id = "go_load")
+        output$panel_analytics <- renderUI({
+          tabsetPanel(id = ns("panel_analytics"),
+                      tabPanel(
+                        title = "Geography", 
+                        fluidRow(
+                          htmltools::br(),
+                          column(8, 
+                                 plotly::plotlyOutput(outputId = ns("plot_geo"))
+                                 )
+                        )
+                      ),
+                      tabPanel(
+                        title = "Sector"
+                      ),
+                      tabPanel(
+                        title = "Type"
+                      ),
+                      tabPanel(
+                        title = "ETF"
+                      ),
+                      tabPanel(
+                        title = "Cap"
+                      )
+          )
+        })
+      } else {
+        shinyjs::hide(id = "go_load")
+      }
+      
+    })
+    
+    observeEvent(input$go_load, {
+      
+      df_temp <- react_var$df_portfolio[1, ]
+      
+      react_var$df_stock <- yahoo::load_data(
+        ticker = df_temp %>% dplyr::pull(Ticker), 
+        from = df_temp %>% dplyr::pull("Date")
+      )
+      
+    })
+    
+    output$plot_geo <- plotly::renderPlotly({
+      plotly::plot_ly(
+        data = react_var$df_portfolio, 
+        labels = ~Country, 
+        values = ~Stocks, 
+        type = "pie")
+    })
  
   })
 }

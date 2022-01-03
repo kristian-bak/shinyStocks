@@ -15,7 +15,12 @@
 
 ## Dependencies ----
 ## Add one line by package you want to add as dependency
-usethis::use_package("thinkr")
+usethis::use_package("shinydashboard")
+usethis::use_package("htmltools")
+usethis::use_package("DT")
+usethis::use_package("shinyWidgets")
+usethis::use_package("dplyr")
+usethis::use_package("shinyjs")
 
 ## Add modules ----
 ## Create a module infrastructure in R/
@@ -29,6 +34,9 @@ golem::add_utils( "helpers" )
 
 ## Add pipe operator
 usethis::use_pipe()
+
+## Bump version number
+usethis::use_version()
 
 ## External resources
 ## Creates .js and .css files at inst/app/www
