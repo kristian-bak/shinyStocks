@@ -7,4 +7,6 @@
 app_server <- function( input, output, session ) {
   # Your application server logic 
   
+  mod_overview_server("overview_ui_1")
+  
 }
