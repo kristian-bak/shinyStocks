@@ -1,6 +1,6 @@
 Package: shinyStocks
 Title: An Amazing Shiny App
-Version: 0.0.2
+Version: 0.0.3
 Authors@R: 
     person(given = "firstname",
            family = "lastname",

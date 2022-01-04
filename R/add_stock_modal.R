@@ -48,7 +48,7 @@ add_stock_modal <- function(ns) {
              selectInput(
                inputId = ns("select_country"), 
                label = "Country", 
-               choices = c("USA", "Germany", "Denmark")
+               choices = c("USA", "Germany", "Denmark", "Sweden")
              )
       ),
       column(4, 

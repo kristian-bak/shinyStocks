@@ -76,11 +76,7 @@ mod_overview_server <- function(id){
     
     observeEvent(input$go_show_example, {
       
-      react_var$df_portfolio <- dplyr::tribble(
-        ~Stock,              ~Ticker, ~Date,        ~Price, ~Stocks, ~Country, ~ETF, ~Type,    ~Cap,
-        "Tesla, Inc.",       "TSLA",  "2021-11-15", 1018,   10,      "USA",    "NO", "Growth", "Large",
-        "Johnson & Johnson", "JNJ",   "2021-12-14", 168,    50,      "USA",    "NO", "Value",  "Large",
-      )
+      react_var$df_portfolio <- load_example_portfolio()
       
     })
     
@@ -106,12 +102,19 @@ mod_overview_server <- function(id){
         "Stocks"     = input$num_n_stocks,
         "Country"    = input$select_country,
         "ETF"        = input$select_etf,
-        "Stock_type" = input$select_type,
+        "Type"       = input$select_type,
         "Cap"        = input$select_cap
       )
       
+      if (is.null(react_var$df_portfolio)) {
+        df_portfolio <- NULL
+      } else {
+        df_portfolio <- react_var$df_portfolio %>% 
+          dplyr::select(Stock, Ticker, Date, Price, Stocks, Country, ETF, Type, Cap)
+      }
+      
       react_var$df_portfolio <- rbind(
-        react_var$df_portfolio, 
+        df_portfolio, 
         df_new_row
       )
       
@@ -153,31 +156,7 @@ mod_overview_server <- function(id){
       
       if (!is.null(react_var$df_portfolio)) {
         shinyjs::show(id = "go_load")
-        output$panel_analytics <- renderUI({
-          tabsetPanel(id = ns("panel_analytics"),
-                      tabPanel(
-                        title = "Geography", 
-                        fluidRow(
-                          htmltools::br(),
-                          column(8, 
-                                 plotly::plotlyOutput(outputId = ns("plot_geo"))
-                                 )
-                        )
-                      ),
-                      tabPanel(
-                        title = "Sector"
-                      ),
-                      tabPanel(
-                        title = "Type"
-                      ),
-                      tabPanel(
-                        title = "ETF"
-                      ),
-                      tabPanel(
-                        title = "Cap"
-                      )
-          )
-        })
+        output$panel_analytics <- render_panel_analytics(ns = ns)
       } else {
         shinyjs::hide(id = "go_load")
       }
@@ -186,21 +165,80 @@ mod_overview_server <- function(id){
     
     observeEvent(input$go_load, {
       
-      df_temp <- react_var$df_portfolio[1, ]
+      df_portfolio <- react_var$df_portfolio
+    
+      countries <- df_portfolio %>% 
+        dplyr::pull(Country) %>% 
+        unique()
       
-      react_var$df_stock <- yahoo::load_data(
-        ticker = df_temp %>% dplyr::pull(Ticker), 
-        from = df_temp %>% dplyr::pull("Date")
+      currencies <- map_country_to_currency(x = countries)
+      
+      currency_rates <- vectorized_convert_to_dkk(from = currencies)
+      
+      df_currency <- dplyr::tibble(
+        Country = countries, 
+        Currency = currencies, 
+        Rate = currency_rates
       )
+      
+      df_portfolio <- df_portfolio %>% 
+        dplyr::left_join(df_currency, by = "Country")
+      
+      react_var$df_marked_value <- vectorized_load_data(
+        ticker = df_portfolio$Ticker,
+        from = df_portfolio$Date, 
+        cbind = TRUE, 
+        rate = df_portfolio$Rate * df_portfolio$Stocks
+      )
+      
+      str_ticker <- gsub("\\.|-", "_", df_portfolio$Ticker)
+      
+      vector_marked_value_today <- react_var$df_marked_value %>% 
+        dplyr::filter(Date == max(Date)) %>% 
+        dplyr::select(-Date) %>% 
+        dplyr::select(str_ticker) %>% 
+        convert_data_frame_to_vector() %>% 
+        round(1)
+      
+      df_portfolio$Marked_value <- vector_marked_value_today
+      
+      react_var$df_portfolio <- df_portfolio
+      
       
     })
     
     output$plot_geo <- plotly::renderPlotly({
+      
+      if (is.null(react_var$df_portfolio$Marked_value)) {
+        return()
+      }
+      
       plotly::plot_ly(
         data = react_var$df_portfolio, 
         labels = ~Country, 
-        values = ~Stocks, 
+        values = ~Marked_value, 
         type = "pie")
+      
+    })
+    
+    observeEvent(input$go_edit, {
+      
+      shinyWidgets::show_alert(
+        title = "Error", 
+        text = "This actionButton has no features yet.", 
+        type = "error"
+      )
+      
+    })
+    
+    observeEvent(input$go_copy, {
+      
+      shinyWidgets::show_alert(
+        title = "Error", 
+        text = "This actionButton has no features yet.", 
+        type = "error"
+      )
+      
     })
  
   })
