@@ -4,7 +4,13 @@
 \alias{vectorized_load_data}
 \title{Vectorized load data}
 \usage{
-vectorized_load_data(ticker, from, cbind = TRUE, rate = rep(1, length(ticker)))
+vectorized_load_data(
+  ticker,
+  from,
+  cbind = TRUE,
+  rate = rep(1, length(ticker)),
+  updateProgress = NULL
+)
 }
 \arguments{
 \item{ticker}{ticker code}
@@ -14,6 +20,8 @@ vectorized_load_data(ticker, from, cbind = TRUE, rate = rep(1, length(ticker)))
 \item{cbind}{logical indicating if output should column binded}
 
 \item{rate}{currency conversion rate to DKK. Use rate = 1 if no conversion should be applied}
+
+\item{updateProgress}{progress function}
 }
 \description{
 Vectorized load data

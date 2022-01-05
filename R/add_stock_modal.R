@@ -21,7 +21,8 @@ add_stock_modal <- function(ns) {
       column(4, 
              dateInput(
                inputId = ns("date_first_buy"), 
-               label = "First buy day"
+               label = "First buy day", 
+               value = Sys.Date() - 5
              )
       ),
       column(4, 
@@ -57,6 +58,17 @@ add_stock_modal <- function(ns) {
                label = "ETF", 
                choices = c("Yes", "No")
              )
+      ),
+      column(4, 
+             shinyWidgets::pickerInput(
+               inputId = ns("select_sector"), 
+               label = "Sector", 
+               choices = c("Energy", "Materials", "Industrials", 
+                           "Utilities", "Healthcare", "Financials", 
+                           "Consumer Discretionary", "Consumer Staples", 
+                           "Information Technology", "Communication Services", 
+                           "Real Estate")
+             )
       )
     ),
     fluidRow(
@@ -72,6 +84,13 @@ add_stock_modal <- function(ns) {
                inputId = ns("select_cap"), 
                label = "Market cap", 
                choices = c("Large", "Mid", "Small")
+             )
+      ),
+      column(4, 
+             selectInput(
+               inputId = ns("select_broker"), 
+               label = "Broker", 
+               choices = c(NA, "Danske Bank", "Saxo Bank", "Nordnet", "Other")
              )
       )
     ),

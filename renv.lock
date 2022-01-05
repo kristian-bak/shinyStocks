@@ -716,12 +716,26 @@
       "Repository": "CRAN",
       "Hash": "00344c227c7bd0ab5d78052c5d736c44"
     },
+    "shinyBS": {
+      "Package": "shinyBS",
+      "Version": "0.61",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "f895dafd39733c4a70d425f605a832e7"
+    },
     "shinyWidgets": {
       "Package": "shinyWidgets",
       "Version": "0.6.2",
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "9bdabea3a78fd6a0768c2a319d36264e"
+    },
+    "shinycssloaders": {
+      "Package": "shinycssloaders",
+      "Version": "1.0.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "f39bb3c44a9b496723ec7e86f9a771d8"
     },
     "shinydashboard": {
       "Package": "shinydashboard",

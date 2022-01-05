@@ -4,26 +4,25 @@
 render_panel_analytics <- function(ns) {
   renderUI({
     tabsetPanel(id = ns("panel_analytics"),
-                tabPanel(
+                show_panel_analytics(
                   title = "Geography", 
-                  fluidRow(
-                    htmltools::br(),
-                    column(8, 
-                           plotly::plotlyOutput(outputId = ns("plot_geo"))
-                    )
-                  )
+                  outputId = ns("plot_geo")
                 ),
-                tabPanel(
-                  title = "Sector"
+                show_panel_analytics(
+                  title = "Sector", 
+                  outputId = ns("plot_sector")
                 ),
-                tabPanel(
-                  title = "Type"
+                show_panel_analytics(
+                  title = "Type", 
+                  outputId = ns("plot_type")
                 ),
-                tabPanel(
-                  title = "ETF"
+                show_panel_analytics(
+                  title = "ETF", 
+                  outputId = ns("plot_etf")
                 ),
-                tabPanel(
-                  title = "Cap"
+                show_panel_analytics(
+                  title = "Cap", 
+                  outputId = ns("plot_cap")
                 )
     )
   })

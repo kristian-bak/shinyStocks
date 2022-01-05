@@ -1,4 +1,4 @@
-library(shinyjs)
+library(shinyBS)
 
 #' The application User-Interface
 #' 
@@ -19,7 +19,7 @@ app_ui <- function(request) {
         show_version_number(),
         
         shinydashboard::sidebarMenu(
-          shinydashboard::menuItem("Overview", tabName = "overview", icon = icon("dashboard"))
+          shinydashboard::menuItem("Overview", tabName = "overview", icon = icon("chart-line"))
         )
         
       ),

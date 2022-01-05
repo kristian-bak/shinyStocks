@@ -1,6 +1,6 @@
 Package: shinyStocks
 Title: An Amazing Shiny App
-Version: 0.0.3
+Version: 0.0.3.9000
 Authors@R: 
     person(given = "firstname",
            family = "lastname",
@@ -16,6 +16,7 @@ Imports:
     htmltools,
     magrittr,
     shiny (>= 1.7.1),
+    shinyBS,
     shinydashboard,
     shinyjs,
     shinyWidgets

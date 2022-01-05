@@ -1,0 +1,6 @@
+Date;Username;Portfolio;ID
+2022-01-05;Kristian;Portfolio;konQ31FYk1qIT0
+2022-01-05;Kristian;Portfolio;4A4UPVT8Iid1xX
+2022-01-05;Test;Portfolio;lRzGaHOHB3P161
+2022-01-05;Kristian;Portfolio2;8Xc47ckcivxwJ7
+2022-01-05;Kristian;Portfolio3;6ubW40xMoU1fmM
