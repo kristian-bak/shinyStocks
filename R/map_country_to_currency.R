@@ -1,7 +1,7 @@
 #' Map country to currency
 #' @param x character vector with countries
-#' 
-map_country_to_currency <- function(x) {
+#' @param currency optional, if currency is supplied then the currency is simply returned
+map_country_to_currency <- function(x, currency = rep(NA, length(x))) {
   
   supported_countries <- c("USA", "Germany", "Denmark", "Sweden")
   
@@ -13,6 +13,9 @@ map_country_to_currency <- function(x) {
   x[x == "Denmark"] <- "DKK"
   x[x == "Germany"] <- "EUR"
   x[x == "Sweden"]  <- "SEK"
+  
+  ## Apply currency inputs whenever supplied
+  x[!is.na(currency)] <- currency[!is.na(currency)]
   
   return(x)
   

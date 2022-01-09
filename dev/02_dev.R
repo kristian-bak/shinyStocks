@@ -22,6 +22,10 @@ usethis::use_package("shinyWidgets")
 usethis::use_package("dplyr")
 usethis::use_package("shinyjs")
 usethis::use_package("shinyBS")
+usethis::use_package("kb.yahoo")
+
+## Install new version of kb.yahoo
+devtools::install_git("https://github.com/kristian-bak/kb.yahoo/")
 
 ## Add modules ----
 ## Create a module infrastructure in R/

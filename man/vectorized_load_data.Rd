@@ -6,6 +6,7 @@
 \usage{
 vectorized_load_data(
   ticker,
+  stock_name = rep(NA, length(ticker)),
   from,
   cbind = TRUE,
   rate = rep(1, length(ticker)),
@@ -14,6 +15,8 @@ vectorized_load_data(
 }
 \arguments{
 \item{ticker}{ticker code}
+
+\item{stock_name}{optional. Used to asses if load function for ETFs should be called.}
 
 \item{from}{from date}
 

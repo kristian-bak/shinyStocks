@@ -12,7 +12,7 @@ convert_to_dkk_with_constant <- function(x, currency) {
     ticker <- "SEKDKK=X"
   }
   
-  data <- yahoo::load_data(ticker = ticker, from = Sys.Date() - 7)
+  data <- kb.yahoo::load_data(ticker = ticker, from = Sys.Date() - 7)
   
   exchange_rate <- data %>%
     dplyr::filter(Date == max(Date)) %>%

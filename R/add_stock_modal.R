@@ -5,15 +5,19 @@ add_stock_modal <- function(ns) {
   fluidPage(
     fluidRow(
       column(4, 
-             textInput(
+             selectizeInput(
                inputId = ns("type_stock"), 
-               label = "Stock name"
+               label = "Stock name", 
+               choices = c("", NULL),
+               options = list(create = TRUE)
              )
       ),
       column(4, 
-             textInput(
+             selectizeInput(
                inputId = ns("type_ticker"), 
-               label = "Ticker"
+               label = "Ticker", 
+               choices = c("", NULL),
+               options = list(create = TRUE)
              )
       )
     ),
@@ -49,7 +53,14 @@ add_stock_modal <- function(ns) {
              selectInput(
                inputId = ns("select_country"), 
                label = "Country", 
-               choices = c("USA", "Germany", "Denmark", "Sweden")
+               choices = c("", "USA", "Germany", "Denmark", "Sweden")
+             )
+      ),
+      column(4, 
+             selectInput(
+               inputId = ns("select_currency"), 
+               label = "Currency", 
+               choices = c("", "USD", "EUR", "DKK", "SEK")
              )
       ),
       column(4, 
@@ -63,7 +74,7 @@ add_stock_modal <- function(ns) {
              shinyWidgets::pickerInput(
                inputId = ns("select_sector"), 
                label = "Sector", 
-               choices = c("Energy", "Materials", "Industrials", 
+               choices = c("", "Energy", "Materials", "Industrials", 
                            "Utilities", "Healthcare", "Financials", 
                            "Consumer Discretionary", "Consumer Staples", 
                            "Information Technology", "Communication Services", 
@@ -76,7 +87,7 @@ add_stock_modal <- function(ns) {
              selectInput(
                inputId = ns("select_type"), 
                label = "Type", 
-               choices = c("Growth", "Value")
+               choices = c("Growth", "Value", "Blend")
              )
       ),
       column(4, 
@@ -90,7 +101,7 @@ add_stock_modal <- function(ns) {
              selectInput(
                inputId = ns("select_broker"), 
                label = "Broker", 
-               choices = c(NA, "Danske Bank", "Saxo Bank", "Nordnet", "Other")
+               choices = c("", "Danske Bank", "Saxo Bank", "Nordnet", "Other")
              )
       )
     ),

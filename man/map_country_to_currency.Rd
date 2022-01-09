@@ -4,10 +4,12 @@
 \alias{map_country_to_currency}
 \title{Map country to currency}
 \usage{
-map_country_to_currency(x)
+map_country_to_currency(x, currency = rep(NA, length(x)))
 }
 \arguments{
 \item{x}{character vector with countries}
+
+\item{currency}{optional, if currency is supplied then the currency is simply returned}
 }
 \description{
 Map country to currency

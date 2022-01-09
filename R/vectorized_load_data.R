@@ -1,11 +1,12 @@
 #' Vectorized load data
 #' @param ticker ticker code
+#' @param stock_name optional. Used to asses if load function for ETFs should be called.
 #' @param from from date
 #' @param cbind logical indicating if output should column binded
 #' @param rate currency conversion rate to DKK. Use rate = 1 if no conversion should be applied
 #' @param updateProgress progress function
 #' 
-vectorized_load_data <- function(ticker, from, cbind = TRUE, 
+vectorized_load_data <- function(ticker, stock_name = rep(NA, length(ticker)), from, cbind = TRUE, 
                                  rate = rep(1, length(ticker)), updateProgress = NULL) {
   
   n <- length(ticker)
@@ -18,12 +19,24 @@ vectorized_load_data <- function(ticker, from, cbind = TRUE,
   
   str_ticker <- gsub("\\.|-", "_", ticker)
   
+  sparindex <- is_sparindex(stock_name)
+  
   for (i in 1:n) {
     
-    data_list[[i]] <- yahoo::load_data(
-      ticker = ticker[i], 
-      from = from[i]
-    ) %>% 
+    if (sparindex[i]) {
+      
+      data_list[[i]] <- kb.yahoo::load_stock_price(ticker = ticker[i])
+      
+    } else {
+      
+      data_list[[i]] <- kb.yahoo::load_data(
+        ticker = ticker[i], 
+        from = from[i]
+      )
+      
+    }
+    
+    data_list[[i]] <- data_list[[i]] %>% 
       dplyr::select(Date, Close) %>% 
       dplyr::mutate(Close = Close * rate[i])
     

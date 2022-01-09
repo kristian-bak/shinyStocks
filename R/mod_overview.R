@@ -47,14 +47,10 @@ mod_overview_ui <- function(id){
     ) %>% shinycssloaders::withSpinner(type = 4), 
     htmltools::br(),
     fluidRow(
-      shinyjs::hidden(
-        tagList(
-          actionButton(
-            inputId = ns("go_load"), 
-            label = "Load stock data", 
-            icon = icon("spinner")
-          )
-        )
+      actionButton(
+        inputId = ns("go_load_saved_portfolio"), 
+        label = "Load portfolio", 
+        icon = icon("spinner")
       ),
       shinyjs::hidden(
         tagList(
@@ -68,8 +64,8 @@ mod_overview_ui <- function(id){
       shinyjs::hidden(
         tagList(
           actionButton(
-            inputId = ns("go_load_saved_portfolio"), 
-            label = "Load portfolio", 
+            inputId = ns("go_load"), 
+            label = "Load stock data", 
             icon = icon("spinner")
           )
         )
@@ -116,6 +112,76 @@ mod_overview_server <- function(id){
       
     })
     
+    react_stock_name <- reactive({
+      
+      if (is.null(input$type_ticker)) {
+        return()
+      }
+      
+      stock_name <- get_stock_name(
+        ticker = input$type_ticker, 
+        df = df_stocks, 
+        shiny = TRUE
+      )
+      
+      if (length(stock_name) == 0) {
+        return(input$type_stock)
+      } else {
+        return(stock_name)
+      }
+      
+    })
+    
+    observe({
+      
+      updateSelectizeInput(
+        session = session, 
+        inputId = "type_stock", 
+        choices = react_stock_name()
+      )
+      
+    })
+    
+    observe({
+      
+      if (!is.null(input$type_stock) & !is.null(input$type_ticker)) {
+        if (input$type_stock == "Danske Bank") {
+          #browser()
+        }
+      }
+      
+    })
+    
+    react_ticker <- reactive({
+      
+      if (is.null(input$type_stock)) {
+        return()
+      }
+      
+      ticker <- get_ticker(
+        stock_name = input$type_stock, 
+        df = df_stocks, 
+        shiny = TRUE
+      )
+      
+      if (length(ticker) == 0) {
+        return(input$type_ticker)
+      } else {
+        return(ticker)
+      }
+      
+    })
+    
+    observe({
+      
+      updateSelectizeInput(
+        session = session, 
+        inputId = "type_ticker", 
+        choices = react_ticker()
+      )
+      
+    })
+    
     observeEvent(input$go_submit, {
       
       df_new_row <- data.frame(
@@ -125,6 +191,7 @@ mod_overview_server <- function(id){
         "Price"        = input$num_buy_price,
         "Stocks"       = input$num_n_stocks,
         "Country"      = input$select_country,
+        "Currency"     = input$select_currency,
         "ETF"          = input$select_etf,
         "Type"         = input$select_type,
         "Sector"       = input$select_sector,
@@ -178,12 +245,10 @@ mod_overview_server <- function(id){
       
       if (!is.null(react_var$df_portfolio)) {
         shinyjs::show(id = "go_load")
-        shinyjs::show(id = "go_load_saved_portfolio")
         shinyjs::show(id = "go_save")
         output$panel_analytics <- render_panel_analytics(ns = ns)
       } else {
         shinyjs::hide(id = "go_load")
-        shinyjs::hide(id = "go_load_saved_portfolio")
         shinyjs::hide(id = "go_save")
       }
       
@@ -207,32 +272,13 @@ mod_overview_server <- function(id){
         }
         progress$set(value = value, detail = detail)
       }
-    
-      ## Extracting the unique countries in the portfolio
-      countries <- df_portfolio %>% 
-        dplyr::pull(Country) %>% 
-        unique()
       
-      ## Getting the currency used
-      currencies <- map_country_to_currency(x = countries)
-      
-      ## Finding the conversion rates
-      currency_rates <- vectorized_convert_to_dkk(from = currencies)
-      
-      ## Putting them into a data.frame
-      df_currency <- dplyr::tibble(
-        Country = countries, 
-        Rate = currency_rates
-      )
-      
-      df_portfolio <- df_portfolio %>% 
-        dplyr::select(-Rate, Marked_value) %>%            ## Rate and Marked_value are NA in initial portfolio
-        dplyr::left_join(df_currency, by = "Country") %>% ## so dropping them to avoid Rate.x and Rate.y
-        dplyr::relocate(Rate, .before = Marked_value)
+      df_portfolio <- add_rates(data = df_portfolio)
       
       out <- catch_error(
         vectorized_load_data(
           ticker = df_portfolio$Ticker,
+          stock_name = df_portfolio$Stock,
           from = df_portfolio$Date, 
           cbind = TRUE, 
           rate = df_portfolio$Rate * df_portfolio$Stocks, 
@@ -258,14 +304,12 @@ mod_overview_server <- function(id){
         
       str_ticker <- gsub("\\.|-", "_", df_portfolio$Ticker)
       
-      vector_marked_value_today <- react_var$df_marked_value %>% 
-        dplyr::filter(Date == max(Date)) %>% 
-        dplyr::select(-Date) %>% 
-        dplyr::select(str_ticker) %>% 
-        convert_data_frame_to_vector() %>% 
-        round(1)
+      marked_value_today <- sapply(
+        X = react_var$df_marked_value %>% dplyr::select(-Date), 
+        FUN = get_market_value_today
+      )
       
-      df_portfolio$Marked_value <- vector_marked_value_today
+      df_portfolio$Marked_value <- marked_value_today
       
       react_var$df_portfolio <- df_portfolio
       
@@ -341,6 +385,8 @@ mod_overview_server <- function(id){
     
     observeEvent(input$go_confirm_saving, {
       
+      initialize_log_table()
+      
       ID <- generate_id()
       
       df_log_new <- data.frame(
@@ -379,6 +425,15 @@ mod_overview_server <- function(id){
     })
     
     observeEvent(input$go_load_saved_portfolio, {
+      
+      if (is.null(react_var$df_saved_portfolios)) {
+        shinyWidgets::show_alert(
+          title = "Error", 
+          text = "You need to save portfolios before you can load them.", 
+          type = "error"
+        )
+        return()
+      }
       
       showModal(
         ui = modalDialog(

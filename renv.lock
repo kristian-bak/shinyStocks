@@ -415,6 +415,15 @@
       "Repository": "CRAN",
       "Hash": "98138e0994d41508c7a6b84a0600cfcb"
     },
+    "kb.yahoo": {
+      "Package": "kb.yahoo",
+      "Version": "1.2.0",
+      "Source": "Git",
+      "RemoteType": "xgit",
+      "RemoteUrl": "https://github.com/kristian-bak/kb.yahoo/",
+      "RemoteSha": "3228efa9af1d1a34a176af2d64ff646e77e3b0a4",
+      "Hash": "76d1133267d8e317a0c6450cb99baf01"
+    },
     "knitr": {
       "Package": "knitr",
       "Version": "1.33",
@@ -688,6 +697,13 @@
       "Repository": "CRAN",
       "Hash": "4be3f3f9f5b3c5e5faeef41e55f6d9bc"
     },
+    "rvest": {
+      "Package": "rvest",
+      "Version": "1.0.2",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "bb099886deffecd6f9b298b7d4492943"
+    },
     "sass": {
       "Package": "sass",
       "Version": "0.4.0",
@@ -701,6 +717,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "6f76f71042411426ec8df6c54f34e6dd"
+    },
+    "selectr": {
+      "Package": "selectr",
+      "Version": "0.4-2",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "3838071b66e0c566d55cc26bd6e27bf4"
     },
     "sessioninfo": {
       "Package": "sessioninfo",
@@ -904,15 +927,6 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "ca2fd4ad8ef78cca3aa2b30f992798a8"
-    },
-    "yahoo": {
-      "Package": "yahoo",
-      "Version": "1.0.1",
-      "Source": "Git",
-      "RemoteType": "xgit",
-      "RemoteUrl": "https://github.com/kristian-bak/kb.yahoo",
-      "RemoteSha": "804b0f7fd90b741e8559336276c40a2fd5f9e052",
-      "Hash": "99bb544c597e0fbeabbbf81845af521a"
     },
     "yaml": {
       "Package": "yaml",
