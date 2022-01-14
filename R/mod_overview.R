@@ -231,15 +231,16 @@ mod_overview_server <- function(id){
       if (input$go_confirm_delete) {
         
         react_var$df_portfolio <- NULL
+        react_var$df_holdings  <- NULL
         
       }
       
     })
     
-    output$table_portfolio <- DT::renderDataTable(
-      expr = DT::datatable(react_var$df_portfolio, 
-                           options = list(dom = "t", scrollX = TRUE))
-    )
+    output$table_portfolio <- DT::renderDataTable({
+      DT::datatable(react_var$df_portfolio, 
+                    options = list(dom = "t", scrollX = TRUE))
+    })
     
     observe({
       
@@ -276,11 +277,10 @@ mod_overview_server <- function(id){
       df_portfolio <- add_rates(data = df_portfolio)
       
       out <- catch_error(
-        vectorized_load_data(
+        vectorized_load_data_and_get_etf_info(
           ticker = df_portfolio$Ticker,
           stock_name = df_portfolio$Stock,
           from = df_portfolio$Date, 
-          cbind = TRUE, 
           rate = df_portfolio$Rate * df_portfolio$Stocks, 
           updateProgress = updateProgress
         )
@@ -288,7 +288,7 @@ mod_overview_server <- function(id){
       
       if (is.null(out$error)) {
         
-        react_var$df_marked_value <- out$value
+        react_var$df_marked_value <- out$value$df_marked_value
         
       } else {
         
@@ -301,30 +301,59 @@ mod_overview_server <- function(id){
         return()
         
       }
-        
-      str_ticker <- gsub("\\.|-", "_", df_portfolio$Ticker)
+      
+      str_ticker <- stringify(x = df_portfolio$Ticker)
       
       marked_value_today <- sapply(
         X = react_var$df_marked_value %>% dplyr::select(-Date), 
         FUN = get_market_value_today
       )
       
-      df_portfolio$Marked_value <- marked_value_today
+      total_marked_value <- sum(marked_value_today)
       
-      react_var$df_portfolio <- df_portfolio
+      df_portfolio <- df_portfolio %>% 
+        dplyr::mutate(Region = map_country_to_region(x = Country),
+                      Marked_value = marked_value_today, 
+                      Weight = round(Marked_value / total_marked_value, 3))
+      
+      res <- get_holdings(
+        df_portfolio = df_portfolio, 
+        etf_info = out$value$etf_list
+      )
+      
+      react_var$df_holdings <- res$df_holdings
+      react_var$df_holdings_agg <- res$df_holdings_agg
+      
+      react_var$df_portfolio <- df_portfolio %>% 
+        dplyr::select(-Region)
+      
+      react_var$list_benchmark <- load_benchmark_info(
+        df_portfolio = df_portfolio, 
+        etf_info = out$value$etf_list
+      )
+      
+      react_var$df_geo_benchmark <- compare_with_benchmark_portfolio(
+        df_holdings    = react_var$df_holdings, 
+        benchmark_info = react_var$list_benchmark$country_info, 
+        var = "Region"
+      )
       
     })
     
     output$plot_geo <- plotly::renderPlotly({
       plot_pie_chart(
-        data = react_var$df_portfolio, 
-        labels = "Country"
+        data = react_var$df_holdings, 
+        labels = "Region"
       )
     })
     
+    output$table_geo_benchmark <- DT::renderDataTable(
+      expr = DT::datatable(react_var$df_geo_benchmark)
+    )
+    
     output$plot_sector <- plotly::renderPlotly({
       plot_pie_chart(
-        data = react_var$df_portfolio, 
+        data = react_var$df_holdings %>% dplyr::filter(Sector != "Cash and/or Derivatives"), 
         labels = "Sector"
       )
     })
@@ -479,6 +508,10 @@ mod_overview_server <- function(id){
     
     output$table_saved_portfolios <- DT::renderDataTable(
       expr = DT::datatable(react_var$df_saved_portfolios, options = list(dom = "t"))
+    )
+    
+    output$table_holdings <- DT::renderDataTable(
+      expr = DT::datatable(react_var$df_holdings_agg)
     )
  
   })

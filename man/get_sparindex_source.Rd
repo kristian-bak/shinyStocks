@@ -13,4 +13,5 @@ Get sparindex source
 Ticker is used to get marked value today
 Ticker_approx is used to get historical market value approximation
 iShares_url is used to get holdings and sector information
+Skip is the parameter used in read.csv for the specific url
 }

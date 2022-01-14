@@ -75,7 +75,7 @@ add_stock_modal <- function(ns) {
                inputId = ns("select_sector"), 
                label = "Sector", 
                choices = c("", "Energy", "Materials", "Industrials", 
-                           "Utilities", "Healthcare", "Financials", 
+                           "Utilities", "Health care", "Financials", 
                            "Consumer Discretionary", "Consumer Staples", 
                            "Information Technology", "Communication Services", 
                            "Real Estate")

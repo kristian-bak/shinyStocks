@@ -4,12 +4,14 @@
 \alias{show_panel_analytics}
 \title{Show panel analytics}
 \usage{
-show_panel_analytics(title, outputId)
+show_panel_analytics(title, table_outputId = NULL, plotly_outputId)
 }
 \arguments{
 \item{title}{title of panel}
 
-\item{outputId}{outputId of plotly object}
+\item{table_outputId}{outputId of DT dataTableOutput object}
+
+\item{plotly_outputId}{outputId of plotly object}
 }
 \description{
 Show panel analytics

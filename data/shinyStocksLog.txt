@@ -1,3 +1,4 @@
 Date;Username;Portfolio;ID
 2022-01-08;Kristian;Portfolio;qS92wcwz02vEnC
 2022-01-08;Kristian;Portfolio 2;jA5bzX64cU1pSp
+2022-01-09;Kristian;Portfolio with Sparindex;qpligo7m1UB1G1
