@@ -15,11 +15,12 @@ render_panel_analytics <- function(ns) {
                 ),
                 show_panel_analytics(
                   title = "Geography",
-                  table_outputId = ns("table_geo_benchmark"),
+                  table_outputId = ns("table_benchmark_geo"),
                   plotly_outputId = ns("plot_geo")
                 ),
                 show_panel_analytics(
                   title = "Sector", 
+                  table_outputId = ns("table_benchmark_sector"),
                   plotly_outputId = ns("plot_sector")
                 ),
                 show_panel_analytics(

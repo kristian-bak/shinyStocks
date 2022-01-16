@@ -23,6 +23,10 @@ usethis::use_package("dplyr")
 usethis::use_package("shinyjs")
 usethis::use_package("shinyBS")
 usethis::use_package("kb.yahoo")
+usethis::use_package("shinycssloaders")
+usethis::use_package("plotly")
+usethis::use_package("TTR")
+usethis::use_package("purrr")
 
 ## Install new version of kb.yahoo
 devtools::install_git("https://github.com/kristian-bak/kb.yahoo/")

@@ -1,4 +1,4 @@
-#' Vectorized load data
+#' Vectorized load data and get etf info
 #' @param ticker ticker code
 #' @param stock_name optional. Used to asses if load function for ETFs should be called.
 #' @param from from date

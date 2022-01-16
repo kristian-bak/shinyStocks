@@ -198,7 +198,8 @@ mod_overview_server <- function(id){
         "Cap"          = input$select_cap,
         "Broker"       = input$select_broker, 
         "Rate"         = NA,
-        "Marked_value" = NA
+        "Marked_value" = NA,
+        "Weight"       = NA
       )
         
       react_var$df_portfolio <- rbind(
@@ -327,15 +328,24 @@ mod_overview_server <- function(id){
       react_var$df_portfolio <- df_portfolio %>% 
         dplyr::select(-Region)
       
+      react_var$df_sector <- react_var$df_holdings %>% 
+        dplyr::filter(Sector != "Cash and/or Derivatives")
+      
       react_var$list_benchmark <- load_benchmark_info(
         df_portfolio = df_portfolio, 
         etf_info = out$value$etf_list
       )
       
-      react_var$df_geo_benchmark <- compare_with_benchmark_portfolio(
+      react_var$df_benchmark_geo <- compare_with_benchmark_portfolio(
         df_holdings    = react_var$df_holdings, 
         benchmark_info = react_var$list_benchmark$country_info, 
         var = "Region"
+      )
+      
+      react_var$df_benchmark_sector <- compare_with_benchmark_portfolio(
+        df_holdings    = react_var$df_sector, 
+        benchmark_info = react_var$list_benchmark$sector_info %>% dplyr::filter(Sector != "Cash and/or Derivatives"), 
+        var = "Sector"
       )
       
     })
@@ -347,13 +357,17 @@ mod_overview_server <- function(id){
       )
     })
     
-    output$table_geo_benchmark <- DT::renderDataTable(
-      expr = DT::datatable(react_var$df_geo_benchmark)
+    output$table_benchmark_geo <- DT::renderDataTable(
+      expr = DT::datatable(react_var$df_benchmark_geo)
+    )
+    
+    output$table_benchmark_sector <- DT::renderDataTable(
+      expr = DT::datatable(react_var$df_benchmark_sector)
     )
     
     output$plot_sector <- plotly::renderPlotly({
       plot_pie_chart(
-        data = react_var$df_holdings %>% dplyr::filter(Sector != "Cash and/or Derivatives"), 
+        data = react_var$df_sector, 
         labels = "Sector"
       )
     })
