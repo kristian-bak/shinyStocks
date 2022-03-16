@@ -6,17 +6,14 @@
 #' 
 compare_with_benchmark_portfolio <- function(df_holdings, benchmark_info, var) {
   
-  total_marked_value <- df_holdings %>% 
-    dplyr::pull(Marked_value) %>% 
-    sum()
-  
   df_summary <- df_holdings %>% 
     dplyr::group_by(dplyr::across(var)) %>% 
-    dplyr::summarise(Portfolio = sum(Marked_value) / total_marked_value) %>% 
+    dplyr::summarise(Portfolio = sum(Marked_value)) %>%
+    dplyr::mutate(Portfolio = Portfolio / sum(Portfolio)) %>% 
     dplyr::full_join(benchmark_info %>% dplyr::rename(Benchmark = Pct), by = var) %>% 
-    dplyr::mutate(Portfolio = 100 * Portfolio %>% round(3), 
-                  Benchmark = 100 * Benchmark %>% round(3),
-                  Difference = Portfolio - Benchmark %>% round(3)) %>% 
+    dplyr::mutate(Portfolio = round(100 * Portfolio, 2), 
+                  Benchmark = round(100 * Benchmark, 2),
+                  Difference = round(Portfolio - Benchmark, 2)) %>% 
     dplyr::arrange(dplyr::desc(Portfolio))
   
   return(df_summary)

@@ -43,7 +43,8 @@ get_holdings <- function(df_portfolio, etf_info) {
     dplyr::group_by(Stock) %>% 
     dplyr::summarise(Marked_value = sum(Marked_value)) %>% 
     dplyr::arrange(dplyr::desc(Marked_value)) %>% 
-    dplyr::mutate(Weight = round(100 * (Marked_value / total_marked_value), 2))
+    dplyr::mutate(Weight = 100 * (Marked_value / sum(Marked_value)), 
+                  Weight = round(Weight, 2))
   
   out <- list(
     "df_holdings_agg" = df_holdings_agg,

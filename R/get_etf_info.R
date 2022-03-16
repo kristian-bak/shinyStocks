@@ -78,9 +78,13 @@ get_country_info <- function(data) {
 
 #' Get holdings info
 #' @param data data.frame from load_etf_info
-#' @param top_n number of rows to return. Default is top 100
+#' @param top_n number of rows to return. Default is all
 #' 
-get_holdings_info <- function(data, ticker, top_n = 100) {
+get_holdings_info <- function(data, ticker, top_n) {
+  
+  if (missing(top_n)) {
+    top_n <- nrow(data)
+  }
   
   data %>% 
     dplyr::slice(1:top_n)

@@ -24,14 +24,14 @@ add_rates <- function(data) {
     Rate = currency_rates
   )
   
-  df_rates <- data %>% 
-    dplyr::select(Country, Currency) %>% 
-    unique() %>% 
-    dplyr::left_join(df_currency %>% dplyr::select(-Country), by = "Currency")
+  #df_rates <- data %>% 
+  #  dplyr::select(Country, Currency) %>% 
+  #  unique() %>% 
+  #  dplyr::left_join(df_currency %>% dplyr::select(-Country), by = "Currency")
   
   data <- data %>% 
     dplyr::select(-Rate) %>%                                      ## Rate is NA in initial portfolio
-    dplyr::left_join(df_rates, by = c("Country", "Currency")) %>% ## so dropping it to avoid Rate.x and Rate.y
+    dplyr::left_join(df_currency, by = c("Country", "Currency")) %>% ## so dropping it to avoid Rate.x and Rate.y
     dplyr::relocate(Rate, .before = Marked_value)
   
   return(data)

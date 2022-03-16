@@ -3,22 +3,32 @@
 #' 
 map_country_to_region <- function(x) {
   
-  us <- c("Canada", "United States")
+  y <- x
+  
+  us <- "United States"
+  
   eu <- c("Austria", "Belgium", "European Union", "Finland", "France", "Germany", 
-          "Hungary", "Ireland", "Italy", "Netherlands", "Norway", "Portugal", 
-          "Russian Federation", "Spain", "Sweden", "Switzerland", "United Kingdom")
-  em <- c("Argentina", "Australia", "Brazil", "Chile", "China", "Colombia", "Hong Kong", 
-          "India", "Israel", "Korea (South)", "Malaysia", "Mexico", "New Zealand", 
-          "Philippines", "Singapore", "South Africa", "Taiwan", "Thailand", "Turkey")
+          "Ireland", "Italy", "Netherlands", "Norway", "Portugal", 
+          "Spain", "Sweden", "Switzerland", "United Kingdom")
+  
+  em <- c("Argentina", "Brazil", "Chile", "China", "Colombia", "Hungary", 
+          "Hong Kong", "India", "Israel", "Indonesia", 
+          "Korea (South)", "Malaysia", "Mexico", "Morocco",
+          "Russian Federation",
+          "Philippines", "Poland",
+          "Singapore", "South Africa", "Taiwan", "Thailand", "Turkey")
+  
   jp <- c("Japan")
   dk <- c("Denmark")
+  other <- c("Canada", "Australia", "New Zealand")
   
-  x[x %in% us] <- "USA"
-  x[x %in% eu] <- "Europe"
-  x[x %in% em] <- "Emerging Markets"
-  x[x %in% jp] <- "Japan"
-  x[x %in% dk] <- "Denmark"
+  y[x %in% us] <- "USA"
+  y[x %in% eu] <- "Europe"
+  y[x %in% em] <- "Emerging Markets"
+  y[x %in% jp] <- "Japan"
+  y[x %in% dk] <- "Denmark"
+  y[x %in% other] <- "Other"
   
-  return(x)
+  return(y)
   
 }

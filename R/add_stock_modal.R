@@ -50,6 +50,13 @@ add_stock_modal <- function(ns) {
     ),
     fluidRow(
       column(4, 
+             shinyWidgets::pickerInput(
+               inputId = ns("select_etf"), 
+               label = "ETF", 
+               choices = c("Yes", "No")
+             )
+      ),
+      column(4, 
              selectInput(
                inputId = ns("select_country"), 
                label = "Country", 
@@ -61,13 +68,6 @@ add_stock_modal <- function(ns) {
                inputId = ns("select_currency"), 
                label = "Currency", 
                choices = c("", "USD", "EUR", "DKK", "SEK")
-             )
-      ),
-      column(4, 
-             selectInput(
-               inputId = ns("select_etf"), 
-               label = "ETF", 
-               choices = c("Yes", "No")
              )
       ),
       column(4, 

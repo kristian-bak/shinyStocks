@@ -322,6 +322,11 @@ mod_overview_server <- function(id){
         etf_info = out$value$etf_list
       )
       
+      out$value$etf_list[[1]]$holdings_info %>% 
+        dplyr::group_by(Location) %>% 
+        dplyr::summarise(Weight = sum(Weight)) %>% 
+        dplyr::mutate(Weight = Weight / sum(Weight))
+      
       react_var$df_holdings <- res$df_holdings
       react_var$df_holdings_agg <- res$df_holdings_agg
       
@@ -335,6 +340,8 @@ mod_overview_server <- function(id){
         df_portfolio = df_portfolio, 
         etf_info = out$value$etf_list
       )
+      
+      get_country_info(data = out$value$etf_list[[1]]$holdings_info)
       
       react_var$df_benchmark_geo <- compare_with_benchmark_portfolio(
         df_holdings    = react_var$df_holdings, 
@@ -497,7 +504,7 @@ mod_overview_server <- function(id){
         
         shinyWidgets::show_alert(
           title = "Error", 
-          text = "Pick a portfolio by selecting on a row in the table", 
+          text = "Pick a portfolio by clicking a row in the table", 
           type = "error"
         )
         

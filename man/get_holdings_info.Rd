@@ -4,12 +4,12 @@
 \alias{get_holdings_info}
 \title{Get holdings info}
 \usage{
-get_holdings_info(data, ticker, top_n = 100)
+get_holdings_info(data, ticker, top_n)
 }
 \arguments{
 \item{data}{data.frame from load_etf_info}
 
-\item{top_n}{number of rows to return. Default is top 100}
+\item{top_n}{number of rows to return. Default is all}
 }
 \description{
 Get holdings info

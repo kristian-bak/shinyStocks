@@ -2,3 +2,5 @@ Date;Username;Portfolio;ID
 2022-01-08;Kristian;Portfolio;qS92wcwz02vEnC
 2022-01-08;Kristian;Portfolio 2;jA5bzX64cU1pSp
 2022-01-09;Kristian;Portfolio with Sparindex;qpligo7m1UB1G1
+2022-03-14;Kristian;Nordnet Sparindex;UBh2zyj2ZV02lK
+2022-03-16;Kristian;Globale aktier;2yEPa9U6gu5Oso

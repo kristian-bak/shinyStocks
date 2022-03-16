@@ -11,7 +11,7 @@ load_benchmark_info <- function(df_portfolio, etf_info) {
     
     benchmark_id <- which(benchmark_name == df_portfolio$Stock)[1]
     
-    out <- out$value$etf_list[[benchmark_id]]
+    out <- etf_info[[benchmark_id]]
     
   } else {
     

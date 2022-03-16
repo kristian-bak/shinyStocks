@@ -3,12 +3,11 @@
 #' 
 get_file_name <- function(stock_name) {
   
-  month <- Sys.Date() %>% 
-    substring(1, 7) %>% 
+  str_date <- Sys.Date() %>% 
     gsub("-", "_", x = .)
   
   str_stock_name <- stringify(x = stock_name)
-  file_name <- paste0("./data/etf_info/", str_stock_name, "_", month, ".RDS")
+  file_name <- paste0("./data/etf_info/", str_stock_name, "_", str_date, ".RDS")
   
   return(file_name)
   
