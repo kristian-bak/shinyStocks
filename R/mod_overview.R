@@ -231,15 +231,39 @@ mod_overview_server <- function(id){
       
       if (input$go_confirm_delete) {
         
-        react_var$df_portfolio <- NULL
-        react_var$df_holdings  <- NULL
+        react_var$df_portfolio        <- NULL
+        react_var$df_holdings         <- NULL
+        react_var$df_benchmark_geo    <- NULL
+        react_var$df_benchmark_sector <- NULL
+        react_var$df_holdings_agg     <- NULL
+        react_var$df_sector           <- NULL
         
       }
       
     })
     
+    observeEvent(input$go_load_saved_portfolio, {
+      
+      react_var$df_holdings         <- NULL
+      react_var$df_benchmark_geo    <- NULL
+      react_var$df_benchmark_sector <- NULL
+      react_var$df_holdings_agg     <- NULL
+      react_var$df_sector           <- NULL
+      
+    })
+    
     output$table_portfolio <- DT::renderDataTable({
-      DT::datatable(react_var$df_portfolio, 
+      
+      df_portfolio <- react_var$df_portfolio
+      
+      if (!is.null(react_var$df_portfolio)) {
+        
+        df_portfolio <- df_portfolio %>% 
+          dplyr::mutate(Weight = 100 * Weight)
+        
+      }
+      
+      DT::datatable(df_portfolio, 
                     options = list(dom = "t", scrollX = TRUE))
     })
     
@@ -299,6 +323,8 @@ mod_overview_server <- function(id){
           type = "error"
         )
         
+        browser()
+        
         return()
         
       }
@@ -322,11 +348,6 @@ mod_overview_server <- function(id){
         etf_info = out$value$etf_list
       )
       
-      out$value$etf_list[[1]]$holdings_info %>% 
-        dplyr::group_by(Location) %>% 
-        dplyr::summarise(Weight = sum(Weight)) %>% 
-        dplyr::mutate(Weight = Weight / sum(Weight))
-      
       react_var$df_holdings <- res$df_holdings
       react_var$df_holdings_agg <- res$df_holdings_agg
       
@@ -340,8 +361,6 @@ mod_overview_server <- function(id){
         df_portfolio = df_portfolio, 
         etf_info = out$value$etf_list
       )
-      
-      get_country_info(data = out$value$etf_list[[1]]$holdings_info)
       
       react_var$df_benchmark_geo <- compare_with_benchmark_portfolio(
         df_holdings    = react_var$df_holdings, 

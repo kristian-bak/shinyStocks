@@ -417,15 +417,15 @@
     },
     "kb.yahoo": {
       "Package": "kb.yahoo",
-      "Version": "1.2.0",
+      "Version": "1.5.2",
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
       "RemoteRepo": "kb.yahoo",
       "RemoteUsername": "kristian-bak",
       "RemoteRef": "HEAD",
-      "RemoteSha": "3228efa9af1d1a34a176af2d64ff646e77e3b0a4",
-      "Hash": "bdc1dc3f8bdb1ed0c039c52bfc4dfed2"
+      "RemoteSha": "d1b0a1fc4a8d449d012efd522c7918c923325b32",
+      "Hash": "2f8a4211ac695f51f484dc60860ca9aa"
     },
     "knitr": {
       "Package": "knitr",

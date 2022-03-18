@@ -28,6 +28,9 @@ usethis::use_package("plotly")
 usethis::use_package("TTR")
 usethis::use_package("purrr")
 
+remotes::install_github(repo = "https://github.com/kristian-bak/kb.yahoo/")
+
+
 ## Install new version of kb.yahoo
 devtools::install_git("https://github.com/kristian-bak/kb.yahoo/")
 
