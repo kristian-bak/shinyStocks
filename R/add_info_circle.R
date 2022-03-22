@@ -1,12 +1,18 @@
-add_info_circle <- function(label, placement = "right", content) {
+add_info_circle <- function(label, placement = "right", content, return = "HTML") {
   
-  htmltools::HTML(
+  out <- htmltools::HTML(
     paste0(label, 
            ' <i class="fa fa-info-circle" data-toggle="tooltip" data-placement=', 
            add_quotes(x = placement), 
            ' title = ', add_quotes(x = content), 
            ' ></i>')
   )
+  
+  if (return == "character") {
+    out <- as.character(out)
+  }
+  
+  return(out)
   
 }
 

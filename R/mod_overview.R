@@ -362,11 +362,20 @@ mod_overview_server <- function(id){
         etf_info = out$value$etf_list
       )
       
-      react_var$df_benchmark_geo <- compare_with_benchmark_portfolio(
+      df_benchmark_geo <- compare_with_benchmark_portfolio(
         df_holdings    = react_var$df_holdings, 
         benchmark_info = react_var$list_benchmark$country_info, 
         var = "Region"
       )
+      
+      df_benchmark_geo <- as.data.frame(df_benchmark_geo)
+      
+      df_benchmark_geo$Region[df_benchmark_geo$Region == "Other"] <- as.character(
+        add_info_circle(label = "Other", placement = "right", 
+                        content = "Canada")
+      )
+      
+      react_var$df_benchmark_geo <- df_benchmark_geo
       
       react_var$df_benchmark_sector <- compare_with_benchmark_portfolio(
         df_holdings    = react_var$df_sector, 
@@ -383,12 +392,14 @@ mod_overview_server <- function(id){
       )
     })
     
-    output$table_benchmark_geo <- DT::renderDataTable(
-      expr = DT::datatable(react_var$df_benchmark_geo)
+    colors_geo <- colors_sector <- list()
+    
+    output$table_benchmark_geo <- formattable::renderFormattable(
+      expr = formattable::formattable(react_var$df_benchmark_geo, colors_geo)
     )
     
-    output$table_benchmark_sector <- DT::renderDataTable(
-      expr = DT::datatable(react_var$df_benchmark_sector)
+    output$table_benchmark_sector <- formattable::renderFormattable(
+      expr = formattable::formattable(react_var$df_benchmark_sector, colors_sector)
     )
     
     output$plot_sector <- plotly::renderPlotly({
@@ -550,9 +561,17 @@ mod_overview_server <- function(id){
       expr = DT::datatable(react_var$df_saved_portfolios, options = list(dom = "t"))
     )
     
-    output$table_holdings <- DT::renderDataTable(
-      expr = DT::datatable(react_var$df_holdings_agg)
-    )
+    output$table_holdings <- DT::renderDataTable({
+      
+      if (is.null(react_var$df_holdings_agg)) {
+        return()
+      }
+      
+      ft <- formattable::formattable(react_var$df_holdings_agg)
+      
+      formattable::as.datatable(ft)
+      
+    })
  
   })
 }

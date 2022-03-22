@@ -9,11 +9,13 @@ show_panel_analytics <- function(title, table_outputId = NULL, plotly_outputId) 
     title = title, 
     fluidRow(
       htmltools::br(),
+      column(6,
+        shinydashboard::box(width = 12,
+          formattable::formattableOutput(outputId = table_outputId)
+        )
+      ),
       column(6, 
-             DT::dataTableOutput(outputId = table_outputId)
-             ),
-      column(6, 
-             plotly::plotlyOutput(outputId = plotly_outputId)
+        plotly::plotlyOutput(outputId = plotly_outputId)
       )
     )
   )

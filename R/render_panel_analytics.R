@@ -8,8 +8,10 @@ render_panel_analytics <- function(ns) {
                   title = "Holdings", 
                   fluidRow(
                     htmltools::br(),
-                    column(8, 
-                           DT::dataTableOutput(outputId = ns("table_holdings"))
+                    column(6, 
+                      shinydashboard::box(width = 12,
+                        DT::dataTableOutput(outputId = ns("table_holdings"))
+                      )
                     )
                   )
                 ),
