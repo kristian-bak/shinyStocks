@@ -4,10 +4,14 @@ add_stock_modal <- function(ns) {
   
   fluidPage(
     fluidRow(
-      column(4, 
+      column(8, 
              selectizeInput(
                inputId = ns("type_stock"), 
-               label = "Stock name", 
+               label = add_info_circle(
+                 label = "Stock name", 
+                 placement = "right", 
+                 content = "You can use whatever name you prefer. All data and statistics will be made using the ticker code"
+               ),
                choices = c("", NULL),
                options = list(create = TRUE)
              )
@@ -53,7 +57,7 @@ add_stock_modal <- function(ns) {
              shinyWidgets::pickerInput(
                inputId = ns("select_etf"), 
                label = "ETF", 
-               choices = c("Yes", "No")
+               choices = c("", "Yes", "No")
              )
       ),
       column(4, 
@@ -66,7 +70,11 @@ add_stock_modal <- function(ns) {
       column(4, 
              selectInput(
                inputId = ns("select_currency"), 
-               label = "Currency", 
+               label = add_info_circle(
+                 label = "Currency", 
+                 placement = "right", 
+                 content = "Currency used to buy the stock"
+               ), 
                choices = c("", "USD", "EUR", "DKK", "SEK")
              )
       ),

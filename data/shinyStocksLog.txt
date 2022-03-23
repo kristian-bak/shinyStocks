@@ -4,3 +4,4 @@ Date;Username;Portfolio;ID
 2022-01-09;Kristian;Portfolio with Sparindex;qpligo7m1UB1G1
 2022-03-14;Kristian;Nordnet Sparindex;UBh2zyj2ZV02lK
 2022-03-16;Kristian;Globale aktier;2yEPa9U6gu5Oso
+2022-03-22;Test;Novo + C25;BOT95G5qIRi6Ib

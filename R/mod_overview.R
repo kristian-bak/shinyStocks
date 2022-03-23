@@ -184,6 +184,30 @@ mod_overview_server <- function(id){
     
     observeEvent(input$go_submit, {
       
+      if (input$select_etf == "") {
+        
+        shinyWidgets::updatePickerInput(
+          session = session, 
+          inputId = "select_etf", 
+          label = "ETF*"
+        )
+
+        return()
+        
+      }
+      
+      if (input$select_etf == "No" & input$select_sector == "") {
+        
+        shinyWidgets::updatePickerInput(
+          session = session, 
+          inputId = "select_sector", 
+          label = "Sector*"
+        )
+        
+        return()
+        
+      }
+      
       df_new_row <- data.frame(
         "Stock"        = input$type_stock, 
         "Ticker"       = input$type_ticker,
@@ -242,7 +266,7 @@ mod_overview_server <- function(id){
       
     })
     
-    observeEvent(input$go_load_saved_portfolio, {
+    observeEvent(input$go_confirm_loading, {
       
       react_var$df_holdings         <- NULL
       react_var$df_benchmark_geo    <- NULL
@@ -370,10 +394,15 @@ mod_overview_server <- function(id){
       
       df_benchmark_geo <- as.data.frame(df_benchmark_geo)
       
-      df_benchmark_geo$Region[df_benchmark_geo$Region == "Other"] <- as.character(
-        add_info_circle(label = "Other", placement = "right", 
-                        content = "Canada")
+      info_region_other <- as.character(
+        add_info_circle(
+          label = "Other", 
+          placement = "right", 
+          content = "Canada, Australia and other countries"
+        )
       )
+      
+      df_benchmark_geo$Region[df_benchmark_geo$Region == "Other"] <- info_region_other
       
       react_var$df_benchmark_geo <- df_benchmark_geo
       
@@ -392,15 +421,29 @@ mod_overview_server <- function(id){
       )
     })
     
-    colors_geo <- colors_sector <- list()
-    
-    output$table_benchmark_geo <- formattable::renderFormattable(
-      expr = formattable::formattable(react_var$df_benchmark_geo, colors_geo)
+    colors_sector <- colors_geo <- list(
+      Difference = formattable::color_tile("lightgreen", "pink")
     )
     
-    output$table_benchmark_sector <- formattable::renderFormattable(
-      expr = formattable::formattable(react_var$df_benchmark_sector, colors_sector)
-    )
+    output$table_benchmark_geo <- formattable::renderFormattable({
+      
+      if (is.null(react_var$df_benchmark_geo)) {
+        return()
+      }
+      
+      formattable::formattable(react_var$df_benchmark_geo, colors_geo)
+      
+    })
+    
+    output$table_benchmark_sector <- formattable::renderFormattable({
+      
+      if (is.null(react_var$df_benchmark_sector)) {
+        return()
+      }
+      
+      formattable::formattable(react_var$df_benchmark_sector, colors_sector)
+      
+    })
     
     output$plot_sector <- plotly::renderPlotly({
       plot_pie_chart(

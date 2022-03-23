@@ -1,3 +1,4 @@
+#' @export
 add_info_circle <- function(label, placement = "right", content, return = "HTML") {
   
   out <- htmltools::HTML(

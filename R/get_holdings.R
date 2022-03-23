@@ -39,12 +39,22 @@ get_holdings <- function(df_portfolio, etf_info) {
     dplyr::pull(Marked_value) %>% 
     sum()
   
-  df_holdings_agg <- df_holdings %>% 
-    dplyr::group_by(Stock) %>% 
-    dplyr::summarise(Marked_value = sum(Marked_value)) %>% 
+  remove_everything_after <- function(pattern, x) {
+  
+    gsub(paste0(pattern, ".*"), "", x)
+    
+  }
+  
+  df_holdings_agg <- df_holdings %>%
+    dplyr::mutate(str_ticker = remove_everything_after(pattern = "\\.", x = Ticker), 
+                  str_ticker = gsub(pattern = "\\-", " ", str_ticker)) %>% 
+    dplyr::group_by(str_ticker) %>% 
+    dplyr::summarise(Stock = which.max.length(Stock), 
+                     Marked_value = sum(Marked_value)) %>% 
     dplyr::arrange(dplyr::desc(Marked_value)) %>% 
     dplyr::mutate(Weight = 100 * (Marked_value / sum(Marked_value)), 
-                  Weight = round(Weight, 2))
+                  Weight = round(Weight, 2)) %>% 
+    dplyr::select(Stock, Marked_value, Weight)
   
   out <- list(
     "df_holdings_agg" = df_holdings_agg,

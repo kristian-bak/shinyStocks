@@ -25,7 +25,3 @@ get_sparindex_source <- function() {
   )
   
 }
-
-
-
-

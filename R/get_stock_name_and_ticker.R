@@ -1,9 +1,10 @@
 #' Get stock name and ticker
-#' 
+#' @export
 get_stock_name_and_ticker <- function() {
   
   rbind(
-    get_stock_name_and_ticker_sparindex()#,
+    get_stock_name_and_ticker_sparindex(),
+    get_stock_name_and_ticker_ishares()
     #get_stock_name_and_ticker_usa()
   )
   
@@ -26,6 +27,15 @@ get_stock_name_and_ticker_usa <- function() {
 get_stock_name_and_ticker_sparindex <- function() {
   
   get_sparindex_source() %>% 
+    dplyr::select(Stock, Ticker)
+  
+}
+
+#' Get stock name and ticker for iShares products
+#' 
+get_stock_name_and_ticker_ishares <- function() {
+  
+  get_ishares_source() %>% 
     dplyr::select(Stock, Ticker)
   
 }

@@ -15,6 +15,7 @@ vectorized_load_data_and_get_etf_info <- function(ticker, stock_name = rep(NA, l
   }
   
   data_list <- list()
+  data_list_final <- list()
   etf_list <- list()
   
   str_ticker <- stringify(x = ticker)
@@ -23,11 +24,35 @@ vectorized_load_data_and_get_etf_info <- function(ticker, stock_name = rep(NA, l
   
   for (i in 1:n) {
     
+    ## Loading data for sparindex means getting the latest stock price and 
+    ## downloading ETF info from ishares
     if (sparindex[i]) {
       
-      data_list[[i]] <- kb.yahoo::load_stock_price(ticker = ticker[i])
-      
-      etf_list[[i]] <- get_etf_info(stock_name = stock_name[i], ticker = ticker[i])
+      if (i > 1) {
+        
+        ## If the information already has been loaded, then don't load again
+        if (ticker[i] %in% ticker[1:(i - 1)]) {
+          
+          id <- which(ticker[i] %in% ticker[1:(i - 1)])[1]
+          
+          data_list[[i]] <- data_list[[id]]
+          etf_list[[i]]  <- etf_list[[id]]
+          
+        } else {
+          
+          data_list[[i]] <- kb.yahoo::load_stock_price(ticker = ticker[i])
+          
+          etf_list[[i]] <- get_etf_info(stock_name = stock_name[i], ticker = ticker[i])
+          
+        } 
+        
+      } else {
+        
+        data_list[[i]] <- kb.yahoo::load_stock_price(ticker = ticker[i])
+        
+        etf_list[[i]] <- get_etf_info(stock_name = stock_name[i], ticker = ticker[i])
+        
+      }
       
     } else {
       
@@ -38,11 +63,11 @@ vectorized_load_data_and_get_etf_info <- function(ticker, stock_name = rep(NA, l
       
     }
     
-    data_list[[i]] <- data_list[[i]] %>% 
+    data_list_final[[i]] <- data_list[[i]] %>% 
       dplyr::select(Date, Close) %>% 
       dplyr::mutate(Close = Close * rate[i])
     
-    names(data_list[[i]]) <- c("Date", str_ticker[i])
+    names(data_list_final[[i]]) <- c("Date", str_ticker[i])
     
     if (is.function(updateProgress)) {
       text <- paste("Stock ", i, "of", n)
@@ -51,7 +76,7 @@ vectorized_load_data_and_get_etf_info <- function(ticker, stock_name = rep(NA, l
     
   }
   
-  df_marked_value <- full_join_list(.l = data_list, by = "Date")
+  df_marked_value <- full_join_list(.l = data_list_final, by = "Date")
   
   out <- list(
     "df_marked_value" = df_marked_value,
