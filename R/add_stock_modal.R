@@ -12,7 +12,7 @@ add_stock_modal <- function(ns) {
                  placement = "right", 
                  content = "You can use whatever name you prefer. All data and statistics will be made using the ticker code"
                ),
-               choices = c("", NULL),
+               choices = c("", df_stocks$Stock),
                options = list(create = TRUE)
              )
       ),
@@ -20,7 +20,7 @@ add_stock_modal <- function(ns) {
              selectizeInput(
                inputId = ns("type_ticker"), 
                label = "Ticker", 
-               choices = c("", NULL),
+               choices = c("", df_stocks$Ticker),
                options = list(create = TRUE)
              )
       )
@@ -61,7 +61,7 @@ add_stock_modal <- function(ns) {
              )
       ),
       column(4, 
-             selectInput(
+             shinyWidgets::pickerInput(
                inputId = ns("select_country"), 
                label = "Country", 
                choices = c("", "USA", "Germany", "Denmark", "Sweden")

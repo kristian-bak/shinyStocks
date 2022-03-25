@@ -38,9 +38,13 @@ get_etf_info <- function(stock_name, ticker) {
 #' 
 load_etf_info <- function(ticker) {
   
-  df_url <- get_sparindex_source() %>% 
+  df_url <- get_url_source() %>% 
     dplyr::filter(Ticker == ticker) %>% 
     dplyr::select(iShares_url, Skip)
+  
+  if (nrow(df_url) == 0) {
+    stop("URL and skip value not found based on ticker code. Rember to update get_url_source")
+  }
   
   read.csv(df_url$iShares_url, skip = df_url$Skip) %>% 
     dplyr::as_tibble() %>% 
@@ -48,6 +52,22 @@ load_etf_info <- function(ticker) {
     dplyr::rename(Stock = Name, 
                   Weight = `Weight....`) %>% 
     dplyr::mutate(Weight = Weight / 100)
+  
+}
+
+#' Get URL source
+#' 
+get_url_source <- function() {
+  
+  df <- list()
+  
+  df[[1]] <- get_sparindex_source()
+  df[[2]] <- get_ishares_source()
+  df[[3]] <- get_danske_source()
+  
+  df_out <- do.call("rbind", df)
+  
+  return(df_out)
   
 }
 

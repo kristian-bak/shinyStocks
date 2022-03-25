@@ -1,9 +1,18 @@
+## Document
+devtools::document()
 
 ## Load all functions
 devtools::load_all()
 
 ## Bump version number
 usethis::use_version()
+
+## Add test:
+usethis::use_test("vectorized_load_data_and_get_etf_info")
+
+## Renv
+renv::status()
+renv::snapshot()
 
 usethis::use_package("shinydashboard")
 usethis::use_package("htmltools")
@@ -33,6 +42,7 @@ usethis::use_test( "app" )
 ## Add pipe operator
 usethis::use_pipe()
 
+usethis::use_news_md()
 
 ## Code Coverage----
 ## Set the code coverage service ("codecov" or "coveralls")

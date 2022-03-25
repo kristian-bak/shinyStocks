@@ -282,6 +282,13 @@
       "Repository": "CRAN",
       "Hash": "55624ed409e46c5f358b2c060be87f67"
     },
+    "formattable": {
+      "Package": "formattable",
+      "Version": "0.2.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "870d6d5d39b23923d0c816f904075b4c"
+    },
     "fs": {
       "Package": "fs",
       "Version": "1.5.0",
@@ -417,15 +424,15 @@
     },
     "kb.yahoo": {
       "Package": "kb.yahoo",
-      "Version": "1.5.2",
+      "Version": "1.5.4",
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
       "RemoteRepo": "kb.yahoo",
       "RemoteUsername": "kristian-bak",
       "RemoteRef": "HEAD",
-      "RemoteSha": "d1b0a1fc4a8d449d012efd522c7918c923325b32",
-      "Hash": "2f8a4211ac695f51f484dc60860ca9aa"
+      "RemoteSha": "956f5d2ea86b7c17406b33251a35376bca6f5c91",
+      "Hash": "a1a4cd75350a069db4ef154107db0db9"
     },
     "knitr": {
       "Package": "knitr",
@@ -679,6 +686,13 @@
       "Repository": "CRAN",
       "Hash": "0879f5388fe6e4d56d7ef0b7ccb031e5"
     },
+    "rmarkdown": {
+      "Package": "rmarkdown",
+      "Version": "2.13",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "ac78f4d2e0289d4cba73b88af567b8b1"
+    },
     "roxygen2": {
       "Package": "roxygen2",
       "Version": "7.1.1",
@@ -847,6 +861,13 @@
       "Repository": "CRAN",
       "Hash": "7243004a708d06d4716717fa1ff5b2fe"
     },
+    "tinytex": {
+      "Package": "tinytex",
+      "Version": "0.37",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "a80abeb527a977e4bef21873d29222dd"
+    },
     "usethis": {
       "Package": "usethis",
       "Version": "2.0.1",
@@ -912,10 +933,10 @@
     },
     "xfun": {
       "Package": "xfun",
-      "Version": "0.23",
+      "Version": "0.30",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "791a57f43c887111490851dcd166d344"
+      "Hash": "e83f48136b041845e50a6658feffb197"
     },
     "xml2": {
       "Package": "xml2",

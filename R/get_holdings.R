@@ -6,7 +6,7 @@ get_holdings <- function(df_portfolio, etf_info) {
   
   n <- nrow(df_portfolio)
   id <- 1:n
-  etf_id <- which(is_sparindex(stock_name = df_portfolio$Stock))
+  etf_id <- which(is_etf(stock_name = df_portfolio$Stock))
   stock_id <- id[!id%in% etf_id]
   
   df_list_holdings <- list()
@@ -50,7 +50,7 @@ get_holdings <- function(df_portfolio, etf_info) {
                   str_ticker = gsub(pattern = "\\-", " ", str_ticker)) %>% 
     dplyr::group_by(str_ticker) %>% 
     dplyr::summarise(Stock = which.max.length(Stock), 
-                     Marked_value = sum(Marked_value)) %>% 
+                     Marked_value = round(sum(Marked_value), 2)) %>% 
     dplyr::arrange(dplyr::desc(Marked_value)) %>% 
     dplyr::mutate(Weight = 100 * (Marked_value / sum(Marked_value)), 
                   Weight = round(Weight, 2)) %>% 

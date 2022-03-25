@@ -6,4 +6,19 @@ global <- quote({
   all_stocks  <- df_stocks$Stock
   all_tickers <- df_stocks$Ticker
   
+  info_diff_col <- as.character(
+    add_info_circle(
+      label = "Difference", 
+      placement = "right", 
+      content = "Green = buy and red = sell"
+    )
+  )
+  
+  colors_sector <- colors_geo <- list(
+    Difference = formattable::color_tile("lightgreen", "pink")
+  )
+  
+  names(colors_sector) <- info_diff_col
+  names(colors_geo)    <- info_diff_col
+  
 })

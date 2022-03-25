@@ -237,10 +237,17 @@ mod_overview_server <- function(id){
     
     observeEvent(input$go_delete, {
       
+      if (is.null(input$table_portfolio_cell_clicked$row)) {
+        str_text <- "This will permantly delete the table. Do you want to continue?"
+      } else {
+        id <- paste0(input$table_portfolio_cell_clicked$row, collapse = ", ")
+        str_text <- paste0("This will permantly delete row(s) ", id, ". Do you want to continue? If you wanted to delete the entire table, then press delete without having any rows highlighted")
+      }
+      
       shinyWidgets::ask_confirmation(
         inputId = ns("go_confirm_delete"), 
         title = "Warning", 
-        text = "This will permantly delete the table. Do you want to continue?", 
+        text = str_text, 
         type = "warning", 
         btn_labels = c("No", "Yes"), 
         btn_colors = c("red", "green"), 
@@ -249,11 +256,9 @@ mod_overview_server <- function(id){
       
     })
     
-    observe({
+    observeEvent(input$go_confirm_delete, {
       
-      req(input$go_confirm_delete)
-      
-      if (input$go_confirm_delete) {
+      if (is.null(input$table_portfolio_cell_clicked$row)) {
         
         react_var$df_portfolio        <- NULL
         react_var$df_holdings         <- NULL
@@ -261,6 +266,15 @@ mod_overview_server <- function(id){
         react_var$df_benchmark_sector <- NULL
         react_var$df_holdings_agg     <- NULL
         react_var$df_sector           <- NULL
+        
+      } else {
+        
+        react_var$df_portfolio        <- react_var$df_portfolio[-input$table_portfolio_cell_clicked$row, ]
+        #react_var$df_holdings         <- NULL
+        #react_var$df_benchmark_geo    <- NULL
+        #react_var$df_benchmark_sector <- NULL
+        #react_var$df_holdings_agg     <- NULL
+        #react_var$df_sector           <- NULL
         
       }
       
@@ -288,7 +302,7 @@ mod_overview_server <- function(id){
       }
       
       DT::datatable(df_portfolio, 
-                    options = list(dom = "t", scrollX = TRUE))
+                    options = list(scrollX = TRUE))
     })
     
     observe({
@@ -323,6 +337,7 @@ mod_overview_server <- function(id){
         progress$set(value = value, detail = detail)
       }
       
+      ## Allow NA values for country!!
       df_portfolio <- add_rates(data = df_portfolio)
       
       out <- catch_error(
@@ -330,7 +345,7 @@ mod_overview_server <- function(id){
           ticker = df_portfolio$Ticker,
           stock_name = df_portfolio$Stock,
           from = df_portfolio$Date, 
-          rate = df_portfolio$Rate * df_portfolio$Stocks, 
+          rate_x_stocks = df_portfolio$Rate * df_portfolio$Stocks, 
           updateProgress = updateProgress
         )
       )
@@ -402,15 +417,21 @@ mod_overview_server <- function(id){
         )
       )
       
+      names(df_benchmark_geo) <- c("Region", "Portfolio", "Benchmark", info_diff_col)
+      
       df_benchmark_geo$Region[df_benchmark_geo$Region == "Other"] <- info_region_other
       
       react_var$df_benchmark_geo <- df_benchmark_geo
       
-      react_var$df_benchmark_sector <- compare_with_benchmark_portfolio(
+      df_benchmark_sector <- compare_with_benchmark_portfolio(
         df_holdings    = react_var$df_sector, 
         benchmark_info = react_var$list_benchmark$sector_info %>% dplyr::filter(Sector != "Cash and/or Derivatives"), 
         var = "Sector"
       )
+      
+      names(df_benchmark_sector) <- c("Sector", "Portfolio", "Benchmark", info_diff_col)
+      
+      react_var$df_benchmark_sector <- df_benchmark_sector
       
     })
     
@@ -420,10 +441,6 @@ mod_overview_server <- function(id){
         labels = "Region"
       )
     })
-    
-    colors_sector <- colors_geo <- list(
-      Difference = formattable::color_tile("lightgreen", "pink")
-    )
     
     output$table_benchmark_geo <- formattable::renderFormattable({
       
@@ -594,7 +611,18 @@ mod_overview_server <- function(id){
       df_portfolio_loaded <- load(file = file_name)
       df_portfolio_loaded <- mget(df_portfolio_loaded)$df_portfolio
       
-      react_var$df_portfolio <- df_portfolio_loaded
+      if (input$check_overwrite_portfolio) {
+        
+        react_var$df_portfolio <- df_portfolio_loaded
+        
+      } else {
+        
+        react_var$df_portfolio <- rbind(
+          react_var$df_portfolio,
+          df_portfolio_loaded
+        )
+        
+      }
       
       removeModal()
       

@@ -5,3 +5,7 @@ Date;Username;Portfolio;ID
 2022-03-14;Kristian;Nordnet Sparindex;UBh2zyj2ZV02lK
 2022-03-16;Kristian;Globale aktier;2yEPa9U6gu5Oso
 2022-03-22;Test;Novo + C25;BOT95G5qIRi6Ib
+2022-03-24;Kristian;Danske Bank Portfolio;7zUkkcUf22JtC2
+2022-03-24;Kristian;Danske Bank + Nordnet;Mzg5mkG1LL2Tm7
+2022-03-25;Kristian;Danske Bank;d0i9PrPU8TcmZ1
+2022-03-25;Kristian;Danske + Nordnet;PYNC683Gmpt5sn

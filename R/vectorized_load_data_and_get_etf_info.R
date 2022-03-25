@@ -2,16 +2,24 @@
 #' @param ticker ticker code
 #' @param stock_name optional. Used to asses if load function for ETFs should be called.
 #' @param from from date
-#' @param rate currency conversion rate to DKK. Use rate = 1 if no conversion should be applied
+#' @param rate_x_stocks Rate times stocks which is used to calculate marked value in DKK
 #' @param updateProgress progress function
-#' 
+#' @export
 vectorized_load_data_and_get_etf_info <- function(ticker, stock_name = rep(NA, length(ticker)), from,
-                                 rate = rep(1, length(ticker)), updateProgress = NULL) {
+                                                  rate_x_stocks = rep(1, length(ticker)), updateProgress = NULL) {
   
   n <- length(ticker)
   
+  if (length(stock_name) != n) {
+    stop("Length of stock_name should match length of ticker")
+  }
+  
   if (length(from) != n) {
     stop("Length of from should match length of ticker")
+  }
+  
+  if (length(rate_x_stocks) != n) {
+    stop("Length of rate_x_stocks should match length of ticker")
   }
   
   data_list <- list()
@@ -20,13 +28,13 @@ vectorized_load_data_and_get_etf_info <- function(ticker, stock_name = rep(NA, l
   
   str_ticker <- stringify(x = ticker)
   
-  sparindex <- is_sparindex(stock_name)
+  etf <- is_etf(stock_name)
   
   for (i in 1:n) {
     
     ## Loading data for sparindex means getting the latest stock price and 
     ## downloading ETF info from ishares
-    if (sparindex[i]) {
+    if (etf[i]) {
       
       if (i > 1) {
         
@@ -65,7 +73,8 @@ vectorized_load_data_and_get_etf_info <- function(ticker, stock_name = rep(NA, l
     
     data_list_final[[i]] <- data_list[[i]] %>% 
       dplyr::select(Date, Close) %>% 
-      dplyr::mutate(Close = Close * rate[i])
+      dplyr::mutate(Marked_value_dkk = Close * rate_x_stocks[i]) %>% 
+      dplyr::select(-Close)
     
     names(data_list_final[[i]]) <- c("Date", str_ticker[i])
     
