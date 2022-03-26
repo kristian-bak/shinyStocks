@@ -1,51 +1,54 @@
-# Building a Prod-Ready, Robust Shiny Application.
-# 
-# README: each step of the dev files is optional, and you don't have to 
-# fill every dev scripts before getting started. 
-# 01_start.R should be filled at start. 
-# 02_dev.R should be used to keep track of your development during the project.
-# 03_deploy.R should be used once you need to deploy your app.
-# 
-# 
-###################################
-#### CURRENT FILE: DEV SCRIPT #####
-###################################
+## Document
+devtools::document()
 
-# Engineering
+## Load all functions
+devtools::load_all()
 
-## Dependencies ----
-## Add one line by package you want to add as dependency
-usethis::use_package( "thinkr" )
+# Document and reload your package
+golem::document_and_reload()
 
-## Add modules ----
-## Create a module infrastructure in R/
-golem::add_module( name = "name_of_module1" ) # Name of the module
-golem::add_module( name = "name_of_module2" ) # Name of the module
+# Run the application
+run_app()
 
-## Add helper functions ----
-## Creates fct_* and utils_*
+## Bump version number
+usethis::use_version()
+
+## Add test:
+usethis::use_test("vectorized_load_data_and_get_etf_info")
+
+## Renv
+renv::status()
+renv::snapshot()
+
+usethis::use_package("shinydashboard")
+usethis::use_package("htmltools")
+usethis::use_package("DT")
+usethis::use_package("shinyWidgets")
+usethis::use_package("dplyr")
+usethis::use_package("shinyjs")
+usethis::use_package("shinyBS")
+usethis::use_package("kb.yahoo")
+usethis::use_package("shinycssloaders")
+usethis::use_package("plotly")
+usethis::use_package("TTR")
+usethis::use_package("purrr")
+
+remotes::install_github(repo = "https://github.com/kristian-bak/kb.yahoo/")
+
+golem::add_module(name = "overview") # Name of the module
+golem::add_module(name = "name_of_module2") # Name of the module
+
 golem::add_fct( "helpers" ) 
-golem::add_utils( "helpers" )
-
-## External resources
-## Creates .js and .css files at inst/app/www
-golem::add_js_file( "script" )
-golem::add_js_handler( "handlers" )
-golem::add_css_file( "custom" )
-
-## Add internal datasets ----
-## If you have data in your package
-usethis::use_data_raw( name = "my_dataset", open = FALSE ) 
+golem::add_utils("is")
 
 ## Tests ----
 ## Add one line by test you want to create
 usethis::use_test( "app" )
 
-# Documentation
+## Add pipe operator
+usethis::use_pipe()
 
-## Vignette ----
-usethis::use_vignette("shinyStocks")
-devtools::build_vignettes()
+usethis::use_news_md()
 
 ## Code Coverage----
 ## Set the code coverage service ("codecov" or "coveralls")

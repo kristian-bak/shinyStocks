@@ -1,0 +1,8 @@
+mutate_cell: skal bruges til at tilføje info circles
+
+mutate_cell(Region = as.character(add_info_circle), where = "Region == 'Other'")
+
+mutate_column_name: skal bruges til at tilføje info circles
+
+
+

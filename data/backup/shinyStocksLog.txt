@@ -1,0 +1,7 @@
+Date;Username;Portfolio;ID
+2022-03-25;Kristian;Danske Bank;d0i9PrPU8TcmZ1
+2022-03-25;Kristian;Saxo Sparindex;p9q1hp0hOzd1nk
+2022-03-25;Kristian;Saxo iShares;LtBQN0D44e2nfU
+2022-03-25;Kristian;Saxo Stocks;jvEVg7wz4aG9O3
+2022-03-25;Kristian;Complete portfolio;VkwUu6KbKN354p
+2022-03-26;Kristian;Nordnet;8iLr18MyCR1MuZ

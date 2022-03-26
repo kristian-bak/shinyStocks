@@ -18,7 +18,7 @@ run_app <- function(
     app = shinyApp(
       ui = app_ui,
       server = app_server,
-      onStart = onStart,
+      onStart = purrr::partial(eval, expr = global, envir = globalenv()),
       options = options, 
       enableBookmarking = enableBookmarking, 
       uiPattern = uiPattern

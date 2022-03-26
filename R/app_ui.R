@@ -1,3 +1,5 @@
+library(shinyBS)
+
 #' The application User-Interface
 #' 
 #' @param request Internal parameter for `{shiny}`. 
@@ -5,12 +7,34 @@
 #' @import shiny
 #' @noRd
 app_ui <- function(request) {
+  
   tagList(
     # Leave this function for adding external resources
     golem_add_external_resources(),
     # Your application UI logic 
-    fluidPage(
-      h1("shinyStocks")
+    shinydashboard::dashboardPage(
+      shinydashboard::dashboardHeader(title = "Shiny Stocks"),
+      shinydashboard::dashboardSidebar(
+        
+        show_version_number(),
+        
+        shinydashboard::sidebarMenu(
+          shinydashboard::menuItem("Overview", tabName = "overview", icon = icon("chart-line"))
+        )
+        
+      ),
+      
+      shinydashboard::dashboardBody(
+        shinydashboard::tabItems(
+          # First tab content
+          shinydashboard::tabItem(tabName = "overview",
+                  
+                  mod_overview_ui("overview_ui_1")
+                  
+          )
+        )
+      )
+      
     )
   )
 }
