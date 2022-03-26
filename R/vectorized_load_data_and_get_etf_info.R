@@ -2,11 +2,11 @@
 #' @param ticker ticker code
 #' @param stock_name optional. Used to asses if load function for ETFs should be called.
 #' @param from from date
-#' @param rate_x_stocks Rate times stocks which is used to calculate marked value in DKK
+#' @param rate rate which is used to calculate closing price in DKK
 #' @param updateProgress progress function
 #' @export
 vectorized_load_data_and_get_etf_info <- function(ticker, stock_name = rep(NA, length(ticker)), from,
-                                                  rate_x_stocks = rep(1, length(ticker)), updateProgress = NULL) {
+                                                  rate = rep(1, length(ticker)), updateProgress = NULL) {
   
   n <- length(ticker)
   
@@ -18,8 +18,8 @@ vectorized_load_data_and_get_etf_info <- function(ticker, stock_name = rep(NA, l
     stop("Length of from should match length of ticker")
   }
   
-  if (length(rate_x_stocks) != n) {
-    stop("Length of rate_x_stocks should match length of ticker")
+  if (length(rate) != n) {
+    stop("Length of rate should match length of ticker")
   }
   
   data_list <- list()
@@ -73,7 +73,7 @@ vectorized_load_data_and_get_etf_info <- function(ticker, stock_name = rep(NA, l
     
     data_list_final[[i]] <- data_list[[i]] %>% 
       dplyr::select(Date, Close) %>% 
-      dplyr::mutate(Marked_value_dkk = Close * rate_x_stocks[i]) %>% 
+      dplyr::mutate(Close_dkk = Close * rate[i]) %>% 
       dplyr::select(-Close)
     
     names(data_list_final[[i]]) <- c("Date", str_ticker[i])

@@ -8,7 +8,7 @@ vectorized_load_data_and_get_etf_info(
   ticker,
   stock_name = rep(NA, length(ticker)),
   from,
-  rate_x_stocks = rep(1, length(ticker)),
+  rate = rep(1, length(ticker)),
   updateProgress = NULL
 )
 }
@@ -19,7 +19,7 @@ vectorized_load_data_and_get_etf_info(
 
 \item{from}{from date}
 
-\item{rate_x_stocks}{Rate times stocks which is used to calculate marked value in DKK}
+\item{rate}{rate which is used to calculate closing price in DKK}
 
 \item{updateProgress}{progress function}
 }

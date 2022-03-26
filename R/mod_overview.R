@@ -69,6 +69,15 @@ mod_overview_ui <- function(id){
             icon = icon("spinner")
           )
         )
+      ),
+      shinyjs::hidden(
+        tagList(
+          actionButton(
+            inputId = ns("go_calculate_marked_value"), 
+            label = "Recalculate marked value", 
+            icon = icon("calculator")
+          )
+        )
       )
     ), 
     shinyBS::bsTooltip(
@@ -353,10 +362,12 @@ mod_overview_server <- function(id){
       if (!is.null(react_var$df_portfolio)) {
         shinyjs::show(id = "go_load")
         shinyjs::show(id = "go_save")
+        shinyjs::show(id = "go_calculate_marked_value")
         output$panel_analytics <- render_panel_analytics(ns = ns)
       } else {
         shinyjs::hide(id = "go_load")
         shinyjs::hide(id = "go_save")
+        shinyjs::hide(id = "go_calculate_marked_value")
       }
       
     })
@@ -372,6 +383,7 @@ mod_overview_server <- function(id){
       
       n <- nrow(df_portfolio)
       
+      ## Important that updateProgress is defined here
       updateProgress <- function(value = NULL, detail = NULL) {
         if (is.null(value)) {
           value <- progress$getValue()
@@ -382,12 +394,14 @@ mod_overview_server <- function(id){
 
       df_portfolio <- add_rates(data = df_portfolio)
       
+      react_var$df_portfolio <- df_portfolio
+      
       out <- catch_error(
         vectorized_load_data_and_get_etf_info(
           ticker = df_portfolio$Ticker,
           stock_name = df_portfolio$Stock,
           from = df_portfolio$Date, 
-          rate_x_stocks = df_portfolio$Rate * df_portfolio$Stocks, 
+          rate = df_portfolio$Rate, 
           updateProgress = updateProgress
         )
       )
@@ -395,12 +409,13 @@ mod_overview_server <- function(id){
       if (is.null(out$error)) {
         
         react_var$df_marked_value <- out$value$df_marked_value
+        react_var$etf_info <- out$value$etf_list
         
       } else {
         
         shinyWidgets::show_alert(
           title = "Error", 
-          text = "Loading failed for one of the stocks. The error most likely occured because the ticker code doesn't exist. The error can also occur if you selected today as first buy date on a day where the stock marked is still open. ", 
+          text = "Loading failed for one of the stocks. The error most likely occured because the selected ticker code doesn't exist", 
           type = "error"
         )
         
@@ -410,10 +425,23 @@ mod_overview_server <- function(id){
         
       }
       
-      str_ticker <- stringify(x = df_portfolio$Ticker)
+    })
+    
+    observeEvent(input$go_calculate_marked_value, {
       
+     #if (input$go_calculate_marked_value > 1) {
+     #  browser()
+     #}
+      
+      df_portfolio <- react_var$df_portfolio
+      etf_info     <- react_var$etf_info
+      
+      str_ticker <- stringify(x = df_portfolio$Ticker)
+      closing_price_dkk <- react_var$df_marked_value %>% dplyr::select(-Date)
+      n_stocks <- df_portfolio$Stocks
+        
       marked_value_today <- sapply(
-        X = react_var$df_marked_value %>% dplyr::select(-Date), 
+        X = n_stocks * closing_price_dkk, 
         FUN = get_market_value_today
       )
       
@@ -426,7 +454,7 @@ mod_overview_server <- function(id){
       
       res <- get_holdings(
         df_portfolio = df_portfolio, 
-        etf_info = out$value$etf_list
+        etf_info = etf_info
       )
       
       react_var$df_holdings <- res$df_holdings
@@ -440,7 +468,7 @@ mod_overview_server <- function(id){
       
       react_var$list_benchmark <- load_benchmark_info(
         df_portfolio = df_portfolio, 
-        etf_info = out$value$etf_list, 
+        etf_info = etf_info, 
         benchmark_name = "iShares MSCI ACWI UCITS ETF", 
         benchmark_ticker = "IUSQ.DE"
       )
