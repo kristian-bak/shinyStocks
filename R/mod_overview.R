@@ -184,7 +184,7 @@ mod_overview_server <- function(id){
     
     observeEvent(input$go_submit, {
       
-      if (input$type_ticker == "") {
+      if (is_blank(input$type_ticker)) {
         
         shinyWidgets::show_alert(
           title = "Error", 
@@ -208,7 +208,7 @@ mod_overview_server <- function(id){
         
       }
       
-      if (input$select_currency == "") {
+      if (is_blank(input$select_currency)) {
         
         shinyWidgets::show_alert(
           title = "Error", 
@@ -220,7 +220,7 @@ mod_overview_server <- function(id){
         
       }
       
-      if (input$select_etf == "") {
+      if (is_blank(input$select_etf)) {
         
         shinyWidgets::updatePickerInput(
           session = session, 
@@ -232,7 +232,7 @@ mod_overview_server <- function(id){
         
       }
       
-      if (input$select_etf == "No" & input$select_sector == "") {
+      if (input$select_etf == "No" & is_blank(input$select_sector)) {
         
         shinyWidgets::updatePickerInput(
           session = session, 
