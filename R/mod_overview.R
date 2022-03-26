@@ -74,7 +74,7 @@ mod_overview_ui <- function(id){
         tagList(
           actionButton(
             inputId = ns("go_calculate_marked_value"), 
-            label = "Recalculate marked value", 
+            label = "Calculate marked value", 
             icon = icon("calculator")
           )
         )
@@ -82,7 +82,11 @@ mod_overview_ui <- function(id){
     ), 
     shinyBS::bsTooltip(
       id = ns("go_load"), 
-      title = "The missing values in currency rate and marked value will be replaced with actual data when loading stock data."
+      title = "Load stock price, currency rates and ETF info."
+    ),
+    shinyBS::bsTooltip(
+      id = ns("go_calculate_marked_value"), 
+      title = "Calculations such as marked value, holdings and exposure across geography and sectors will be made. You can adjust your portfolio by add, edit, delete buttons. Additionally, you can modify the fields in the table, for instance number of stocks, and recalculate marked value."
     ),
     htmltools::br(),
     fluidRow(
@@ -429,21 +433,16 @@ mod_overview_server <- function(id){
     
     observeEvent(input$go_calculate_marked_value, {
       
-     #if (input$go_calculate_marked_value > 1) {
-     #  browser()
-     #}
-      
-      df_portfolio <- react_var$df_portfolio
-      etf_info     <- react_var$etf_info
-      
-      str_ticker <- stringify(x = df_portfolio$Ticker)
+      df_portfolio      <- react_var$df_portfolio
+      etf_info          <- react_var$etf_info
+      str_ticker        <- stringify(x = df_portfolio$Ticker)
       closing_price_dkk <- react_var$df_marked_value %>% dplyr::select(-Date)
-      n_stocks <- df_portfolio$Stocks
+      n_stocks          <- df_portfolio$Stocks
         
       marked_value_today <- sapply(
-        X = n_stocks * closing_price_dkk, 
+        X = closing_price_dkk, 
         FUN = get_market_value_today
-      )
+      ) * n_stocks
       
       total_marked_value <- sum(marked_value_today)
       
@@ -464,7 +463,7 @@ mod_overview_server <- function(id){
         dplyr::select(-Region)
       
       react_var$df_sector <- react_var$df_holdings %>% 
-        dplyr::filter(Sector != "Cash and/or Derivatives")
+        remove_cash(var = Sector)
       
       react_var$list_benchmark <- load_benchmark_info(
         df_portfolio = df_portfolio, 
@@ -479,16 +478,6 @@ mod_overview_server <- function(id){
         var = "Region"
       )
       
-      df_benchmark_geo <- as.data.frame(df_benchmark_geo)
-      
-      info_region_other <- as.character(
-        add_info_circle(
-          label = "Other", 
-          placement = "right", 
-          content = "Canada, Australia and other countries"
-        )
-      )
-      
       names(df_benchmark_geo) <- c("Region", "Portfolio", info_benchmark_col, info_diff_col)
       
       df_benchmark_geo$Region[df_benchmark_geo$Region == "Other"] <- info_region_other
@@ -497,7 +486,7 @@ mod_overview_server <- function(id){
       
       df_benchmark_sector <- compare_with_benchmark_portfolio(
         df_holdings    = react_var$df_sector, 
-        benchmark_info = react_var$list_benchmark$sector_info %>% dplyr::filter(Sector != "Cash and/or Derivatives"), 
+        benchmark_info = react_var$list_benchmark$sector_info %>% remove_cash(var = Sector), 
         var = "Sector"
       )
       
