@@ -14,6 +14,14 @@ global <- quote({
     )
   )
   
+  info_benchmark_col <- as.character(
+    add_info_circle(
+      label = "Benchmark", 
+      placement = "right", 
+      content = "The benchmark is MSCI All Countries World Index (ACWI)"
+    )
+  )
+  
   colors_sector <- colors_geo <- list(
     Difference = formattable::color_tile("lightgreen", "pink")
   )

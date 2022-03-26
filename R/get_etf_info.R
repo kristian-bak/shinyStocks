@@ -51,7 +51,9 @@ load_etf_info <- function(ticker) {
     dplyr::select(Name, Ticker, Sector, Location, `Weight....`) %>% 
     dplyr::rename(Stock = Name, 
                   Weight = `Weight....`) %>% 
-    dplyr::mutate(Weight = Weight / 100)
+    dplyr::filter(!Weight %in% c("", "Weight (%)")) %>% 
+    dplyr::mutate(Weight = as.numeric(Weight), 
+                  Weight = Weight / 100)
   
 }
 

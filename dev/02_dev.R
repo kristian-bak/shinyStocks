@@ -4,6 +4,12 @@ devtools::document()
 ## Load all functions
 devtools::load_all()
 
+# Document and reload your package
+golem::document_and_reload()
+
+# Run the application
+run_app()
+
 ## Bump version number
 usethis::use_version()
 
@@ -33,7 +39,7 @@ golem::add_module(name = "overview") # Name of the module
 golem::add_module(name = "name_of_module2") # Name of the module
 
 golem::add_fct( "helpers" ) 
-golem::add_utils( "helpers" )
+golem::add_utils("is")
 
 ## Tests ----
 ## Add one line by test you want to create

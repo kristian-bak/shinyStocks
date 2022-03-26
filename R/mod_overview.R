@@ -91,7 +91,7 @@ mod_overview_server <- function(id){
     
     react_var <- reactiveValues(
       df_portfolio         = NULL, 
-      df_saved_portfolios  = get_saved_portfolios()
+      df_saved_portfolios  = read_log()
     )
     
     observeEvent(input$go_show_example, {
@@ -184,6 +184,42 @@ mod_overview_server <- function(id){
     
     observeEvent(input$go_submit, {
       
+      if (input$type_ticker == "") {
+        
+        shinyWidgets::show_alert(
+          title = "Error", 
+          text = "You must select ticker code", 
+          type = "error"
+        )
+        
+        return()
+        
+      }
+      
+      if (is.na(input$num_n_stocks)) {
+        
+        shinyWidgets::show_alert(
+          title = "Error", 
+          text = "You need to fill out number of stocks", 
+          type = "error"
+        )
+        
+        return()
+        
+      }
+      
+      if (input$select_currency == "") {
+        
+        shinyWidgets::show_alert(
+          title = "Error", 
+          text = "You must select currency", 
+          type = "error"
+        )
+        
+        return()
+        
+      }
+      
       if (input$select_etf == "") {
         
         shinyWidgets::updatePickerInput(
@@ -237,12 +273,7 @@ mod_overview_server <- function(id){
     
     observeEvent(input$go_delete, {
       
-      if (is.null(input$table_portfolio_cell_clicked$row)) {
-        str_text <- "This will permantly delete the table. Do you want to continue?"
-      } else {
-        id <- paste0(input$table_portfolio_cell_clicked$row, collapse = ", ")
-        str_text <- paste0("This will permantly delete row(s) ", id, ". Do you want to continue? If you wanted to delete the entire table, then press delete without having any rows highlighted")
-      }
+      str_text <- get_delete_text(rows_selected = input$table_portfolio_rows_selected)
       
       shinyWidgets::ask_confirmation(
         inputId = ns("go_confirm_delete"), 
@@ -258,7 +289,13 @@ mod_overview_server <- function(id){
     
     observeEvent(input$go_confirm_delete, {
       
-      if (is.null(input$table_portfolio_cell_clicked$row)) {
+      if (!input$go_confirm_delete) {
+        
+        return()
+        
+      }
+      
+      if (is.null(input$table_portfolio_rows_selected)) {
         
         react_var$df_portfolio        <- NULL
         react_var$df_holdings         <- NULL
@@ -269,12 +306,14 @@ mod_overview_server <- function(id){
         
       } else {
         
-        react_var$df_portfolio        <- react_var$df_portfolio[-input$table_portfolio_cell_clicked$row, ]
+        react_var$df_portfolio        <- react_var$df_portfolio[-input$table_portfolio_rows_selected, ]
         #react_var$df_holdings         <- NULL
         #react_var$df_benchmark_geo    <- NULL
         #react_var$df_benchmark_sector <- NULL
         #react_var$df_holdings_agg     <- NULL
         #react_var$df_sector           <- NULL
+        
+        rownames(react_var$df_portfolio) <- 1:nrow(react_var$df_portfolio)
         
       }
       
@@ -301,8 +340,12 @@ mod_overview_server <- function(id){
         
       }
       
-      DT::datatable(df_portfolio, 
-                    options = list(scrollX = TRUE))
+      DT::datatable(
+        data = df_portfolio, 
+        options = list(scrollX = TRUE), 
+        editable = list(target = 'cell')
+      )
+      
     })
     
     observe({
@@ -336,8 +379,7 @@ mod_overview_server <- function(id){
         }
         progress$set(value = value, detail = detail)
       }
-      
-      ## Allow NA values for country!!
+
       df_portfolio <- add_rates(data = df_portfolio)
       
       out <- catch_error(
@@ -398,7 +440,9 @@ mod_overview_server <- function(id){
       
       react_var$list_benchmark <- load_benchmark_info(
         df_portfolio = df_portfolio, 
-        etf_info = out$value$etf_list
+        etf_info = out$value$etf_list, 
+        benchmark_name = "iShares MSCI ACWI UCITS ETF", 
+        benchmark_ticker = "IUSQ.DE"
       )
       
       df_benchmark_geo <- compare_with_benchmark_portfolio(
@@ -417,7 +461,7 @@ mod_overview_server <- function(id){
         )
       )
       
-      names(df_benchmark_geo) <- c("Region", "Portfolio", "Benchmark", info_diff_col)
+      names(df_benchmark_geo) <- c("Region", "Portfolio", info_benchmark_col, info_diff_col)
       
       df_benchmark_geo$Region[df_benchmark_geo$Region == "Other"] <- info_region_other
       
@@ -429,7 +473,7 @@ mod_overview_server <- function(id){
         var = "Sector"
       )
       
-      names(df_benchmark_sector) <- c("Sector", "Portfolio", "Benchmark", info_diff_col)
+      names(df_benchmark_sector) <- c("Sector", "Portfolio", info_benchmark_col, info_diff_col)
       
       react_var$df_benchmark_sector <- df_benchmark_sector
       
@@ -490,6 +534,25 @@ mod_overview_server <- function(id){
       )
     })
     
+    df_portfolio_proxy <- DT::dataTableProxy(
+      outputId = 'table_portfolio', 
+      session = session
+    )
+    
+    observeEvent(input$table_portfolio_cell_edit, {
+      
+      info <- input$table_portfolio_cell_edit
+      
+      react_var$df_portfolio <- DT::editData(react_var$df_portfolio, info)
+      
+      DT::replaceData(
+        proxy = df_portfolio_proxy, 
+        data = react_var$df_portfolio, 
+        resetPaging = FALSE
+      )
+      
+    })
+    
     observeEvent(input$go_edit, {
       
       shinyWidgets::show_alert(
@@ -520,38 +583,51 @@ mod_overview_server <- function(id){
         session = session
       )
       
-      
     })
     
     observeEvent(input$go_confirm_saving, {
       
       initialize_log_table()
       
-      ID <- generate_id()
+      if (is_not_null(input$table_saved_portfolios_rows_selected) & is_not_blank(input$type_user) & is_not_blank(input$type_portfolio)) {
+        shinyWidgets::show_alert(
+          title = "Error", 
+          text = "Either click on a row and thereby save existing portfolio or fill out user name and portfolio name and save new portfolio", 
+          type = "error"
+        )
+        return()
+        
+      }
       
-      df_log_new <- data.frame(
-        Date = Sys.Date() %>% as.Date(),
-        Username = input$type_user,
-        Portfolio = input$type_portfolio,
-        ID = ID
-      )
+      if (is_not_null(input$table_saved_portfolios_rows_selected)) {
+        
+        df_log <- read_log()
+        
+        id <- df_log %>% 
+          dplyr::slice(input$table_saved_portfolios_rows_selected) %>% 
+          dplyr::pull(ID)
+        
+        update_log(
+          df_log = df_log, 
+          id = id, 
+          new_date = Sys.Date()
+        )
+        
+      } else {
+        
+        id <- generate_id()
+        
+        write_to_log(
+          user_name = input$type_user, 
+          portfolio_name = input$type_portfolio, 
+          id = id
+        )
+        
+      }
       
-      file_name_txt <- "shinyStocksLog.txt"
+      save_portfolio(df_portfolio = react_var$df_portfolio, id = id)
       
-      file_txt <- paste0("./data/", file_name_txt)
-      
-      write.table(x = df_log_new, file = file_txt,  
-                  append = TRUE, quote = FALSE, row.names = FALSE, col.names = FALSE, sep = ";")
-      
-      file_name_rda <- paste0(ID, ".rda")
-      
-      file_rda <- paste0("./data/", file_name_rda)
-      
-      df_portfolio <- react_var$df_portfolio
-      
-      save(df_portfolio, file = file_rda)
-      
-      react_var$df_saved_portfolios <- get_saved_portfolios()
+      react_var$df_saved_portfolios <- read_log()
       
       removeModal()
       
@@ -589,8 +665,8 @@ mod_overview_server <- function(id){
     observeEvent(input$go_confirm_loading, {
       
       row_nr <- input$table_saved_portfolios_rows_selected
-      
-      if (is.null(id)) {
+
+      if (is.null(row_nr)) {
         
         shinyWidgets::show_alert(
           title = "Error", 
@@ -606,21 +682,27 @@ mod_overview_server <- function(id){
         dplyr::slice(row_nr) %>% 
         dplyr::pull(ID)
       
-      file_name <- paste0("./data/", file_name, ".rda")
+      n <- length(file_name)
       
-      df_portfolio_loaded <- load(file = file_name)
-      df_portfolio_loaded <- mget(df_portfolio_loaded)$df_portfolio
-      
-      if (input$check_overwrite_portfolio) {
+      for (i in 1:n) {
         
-        react_var$df_portfolio <- df_portfolio_loaded
+        f_name <- paste0("./data/", file_name[i], ".rda")
         
-      } else {
+        df_portfolio_loaded <- load(file = f_name)
+        df_portfolio_loaded <- mget(df_portfolio_loaded)$df_portfolio
         
-        react_var$df_portfolio <- rbind(
-          react_var$df_portfolio,
-          df_portfolio_loaded
-        )
+        if (input$check_overwrite_portfolio) {
+          
+          react_var$df_portfolio <- df_portfolio_loaded
+          
+        } else {
+          
+          react_var$df_portfolio <- rbind(
+            react_var$df_portfolio,
+            df_portfolio_loaded
+          )
+          
+        }
         
       }
       
@@ -629,7 +711,7 @@ mod_overview_server <- function(id){
     })
     
     output$table_saved_portfolios <- DT::renderDataTable(
-      expr = DT::datatable(react_var$df_saved_portfolios, options = list(dom = "t"))
+      expr = DT::datatable(react_var$df_saved_portfolios, selection = "single")
     )
     
     output$table_holdings <- DT::renderDataTable({
@@ -641,6 +723,46 @@ mod_overview_server <- function(id){
       ft <- formattable::formattable(react_var$df_holdings_agg)
       
       formattable::as.datatable(ft)
+      
+    })
+    
+    observe({
+      
+      req(input$type_stock)
+      
+      if (is_etf(input$type_stock)) {
+        
+        shinyWidgets::updatePickerInput(
+          session = session, 
+          inputId = "select_etf", 
+          selected = "Yes"
+        )
+        
+      } else {
+        
+        shinyWidgets::updatePickerInput(
+          session = session, 
+          inputId = "select_etf", 
+          selected = "No"
+        )
+        
+        shinyjs::enable(id = "select_country")
+        
+      }
+      
+      if (is_sparindex(input$type_stock)) {
+        shinyWidgets::updatePickerInput(
+          session = session, 
+          inputId = "select_currency", 
+          selected = "DKK"
+        )
+      } else {
+          shinyWidgets::updatePickerInput(
+            session = session, 
+            inputId = "select_currency", 
+            selected = ""
+          )
+      }
       
     })
  

@@ -45,7 +45,11 @@ add_stock_modal <- function(ns) {
       column(3, 
              numericInput(
                inputId = ns("num_n_stocks"), 
-               label = "Number of stocks", 
+               label = add_info_circle(
+                 label = "Quantity", 
+                 placement = "right", 
+                 content = "Number of stocks is used to calculate marked value today"
+               ),
                value = NA, 
                min = 1, 
                max = Inf, 
@@ -63,12 +67,16 @@ add_stock_modal <- function(ns) {
       column(4, 
              shinyWidgets::pickerInput(
                inputId = ns("select_country"), 
-               label = "Country", 
+               label = add_info_circle(
+                 label = "Country", 
+                 placement = "right", 
+                 content = "Country information is only relevant for stocks. You can ignore this field for ETFs"
+               ),
                choices = c("", "USA", "Germany", "Denmark", "Sweden")
              )
       ),
       column(4, 
-             selectInput(
+             shinyWidgets::pickerInput(
                inputId = ns("select_currency"), 
                label = add_info_circle(
                  label = "Currency", 
@@ -81,7 +89,11 @@ add_stock_modal <- function(ns) {
       column(4, 
              shinyWidgets::pickerInput(
                inputId = ns("select_sector"), 
-               label = "Sector", 
+               label = add_info_circle(
+                 label = "Sector", 
+                 placement = "right", 
+                 content = "Sector is only relevant for stocks. You can ignore this field for ETFs"
+               ),
                choices = c("", "Energy", "Materials", "Industrials", 
                            "Utilities", "Health Care", "Financials", 
                            "Consumer Discretionary", "Consumer Staples", 

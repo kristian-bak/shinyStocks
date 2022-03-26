@@ -4,12 +4,16 @@
 \alias{load_benchmark_info}
 \title{Load benchmark info}
 \usage{
-load_benchmark_info(df_portfolio, etf_info)
+load_benchmark_info(df_portfolio, etf_info, benchmark_name, benchmark_ticker)
 }
 \arguments{
 \item{df_portfolio}{df_portfolio}
 
 \item{etf_info}{etf_info obtained from get_etf_info}
+
+\item{benchmark_name}{name of benchmark}
+
+\item{benchmark_ticker}{ticker code used for the benchmark ETF}
 }
 \description{
 Load benchmark info

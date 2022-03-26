@@ -41,7 +41,7 @@ vectorized_load_data_and_get_etf_info <- function(ticker, stock_name = rep(NA, l
         ## If the information already has been loaded, then don't load again
         if (ticker[i] %in% ticker[1:(i - 1)]) {
           
-          id <- which(ticker[i] %in% ticker[1:(i - 1)])[1]
+          id <- which(ticker[i] == ticker[1:(i - 1)])[1]
           
           data_list[[i]] <- data_list[[id]]
           etf_list[[i]]  <- etf_list[[id]]
@@ -82,7 +82,7 @@ vectorized_load_data_and_get_etf_info <- function(ticker, stock_name = rep(NA, l
       text <- paste("Stock ", i, "of", n)
       updateProgress(detail = text)
     }
-    
+
   }
   
   df_marked_value <- full_join_list(.l = data_list_final, by = "Date")

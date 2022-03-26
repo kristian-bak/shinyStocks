@@ -21,7 +21,6 @@ get_holdings <- function(df_portfolio, etf_info) {
       dplyr::mutate(Region = map_country_to_region(x = Location)) %>% 
       dplyr::select(-Location) %>% 
       dplyr::relocate(Region, .before = Marked_value)
-      
     
   }
   

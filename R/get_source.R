@@ -37,10 +37,11 @@ get_ishares_source <- function() {
   
   dplyr::tribble(
     ~Stock,                                                       ~Ticker, ~Ticker_approx, ~Currency_approx, ~Skip, ~iShares_url,
-    "iShares Global Clean Energy UCITS ETF",                      "ICLN",  "ICLN",         "USD",            9,     "https://www.ishares.com/us/products/239738/ishares-global-clean-energy-etf/1467271812596.ajax?fileType=csv&fileName=ICLN_holdings&dataType=fund",
-    "iShares Automation & Robotics UCITS ETF",                    "RBOT",  "RBOT",         "USD",            2,     "https://www.ishares.com/uk/professional/en/products/284219/fund/1506575576011.ajax?fileType=csv&fileName=RBOT_holdings&dataType=fund",
-    "iShares Digitalisation UCITS ETF",                           "DGTL",  "DGTL",         "USD",            2,     "https://www.ishares.com/uk/individual/en/products/284217/fund/1506575576011.ajax?fileType=csv&fileName=DGTL_holdings&dataType=fund",
-    "iShares Electric Vehicles and Driving Technology UCITS ETF", "ECAR",  "ECAR",         "USD",            2,     "https://www.ishares.com/ch/institutional/en/products/307130/fund/1495092304805.ajax?fileType=csv&fileName=ECAR_holdings&dataType=fund"
+    "iShares Global Clean Energy UCITS ETF",                      "IQQH.DE",  "ICLN",         "USD",            9,  "https://www.ishares.com/us/products/239738/ishares-global-clean-energy-etf/1467271812596.ajax?fileType=csv&fileName=ICLN_holdings&dataType=fund",
+    "iShares Automation & Robotics UCITS ETF",                    "2B76.DE",  "RBOT",         "USD",            2,  "https://www.ishares.com/uk/professional/en/products/284219/fund/1506575576011.ajax?fileType=csv&fileName=RBOT_holdings&dataType=fund",
+    "iShares Digitalisation UCITS ETF",                           "DGTL.MI",  "DGTL",         "USD",            2,  "https://www.ishares.com/uk/individual/en/products/284217/fund/1506575576011.ajax?fileType=csv&fileName=DGTL_holdings&dataType=fund",
+    "iShares Electric Vehicles and Driving Technology UCITS ETF", "ECAR.MI",  "ECAR",         "USD",            2,  "https://www.ishares.com/ch/institutional/en/products/307130/fund/1495092304805.ajax?fileType=csv&fileName=ECAR_holdings&dataType=fund",
+    "iShares MSCI ACWI UCITS ETF",                                "IUSQ.DE",  "SSAC",         "USD",            2,  "https://www.ishares.com/uk/individual/en/products/251850/ishares-msci-acwi-ucits-etf/1506575576011.ajax?fileType=csv&fileName=SSAC_holdings&dataType=fund"
   )
   
 }

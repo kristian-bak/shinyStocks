@@ -1,11 +1,10 @@
 #' Load benchmark info
 #' @param df_portfolio df_portfolio
 #' @param etf_info etf_info obtained from get_etf_info
+#' @param benchmark_name name of benchmark
+#' @param benchmark_ticker ticker code used for the benchmark ETF
 #' 
-load_benchmark_info <- function(df_portfolio, etf_info) {
-  
-  benchmark_name   <- "Sparindex INDEX Globale Aktier KL"
-  benchmark_ticker <- "SPVIGAKL.CO"
+load_benchmark_info <- function(df_portfolio, etf_info, benchmark_name, benchmark_ticker) {
   
   if (benchmark_name %in% df_portfolio$Stock) {
     

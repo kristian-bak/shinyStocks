@@ -1,6 +1,6 @@
-#' Get saved portfolios
+#' Read log
 #' 
-get_saved_portfolios <- function() {
+read_log <- function() {
   
   if (!file.exists("./data/shinyStocksLog.txt")) {
     return(NULL)
