@@ -319,7 +319,14 @@ mod_overview_server <- function(id){
         
       } else {
         
-        react_var$df_portfolio        <- react_var$df_portfolio[-input$table_portfolio_rows_selected, ]
+        rows_selected <- input$table_portfolio_rows_selected
+        react_var$df_portfolio <- react_var$df_portfolio[-rows_selected, ]
+      
+        ticker_selected <- react_var$df_portfolio$Ticker[rows_selected]
+        ticker_selected <- stringify(ticker_selected)
+        react_var$df_marked_value <- react_var$df_marked_value %>% 
+          dplyr::select(-ticker_selected)
+        
         #react_var$df_holdings         <- NULL
         #react_var$df_benchmark_geo    <- NULL
         #react_var$df_benchmark_sector <- NULL
@@ -432,6 +439,10 @@ mod_overview_server <- function(id){
     })
     
     observeEvent(input$go_calculate_marked_value, {
+      
+      #if (input$go_calculate_marked_value > 1) {
+      #  browser()
+      #}
       
       df_portfolio      <- react_var$df_portfolio
       etf_info          <- react_var$etf_info
