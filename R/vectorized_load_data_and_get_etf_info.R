@@ -48,7 +48,7 @@ vectorized_load_data_and_get_etf_info <- function(ticker, stock_name = rep(NA, l
           
         } else {
           
-          data_list[[i]] <- kb.yahoo::load_stock_price(ticker = ticker[i])
+          data_list[[i]] <- db_load_stock_price(ticker = ticker[i])
           
           etf_list[[i]] <- get_etf_info(stock_name = stock_name[i], ticker = ticker[i])
           
@@ -56,7 +56,7 @@ vectorized_load_data_and_get_etf_info <- function(ticker, stock_name = rep(NA, l
         
       } else {
         
-        data_list[[i]] <- kb.yahoo::load_stock_price(ticker = ticker[i])
+        data_list[[i]] <- db_load_stock_price(ticker = ticker[i])
         
         etf_list[[i]] <- get_etf_info(stock_name = stock_name[i], ticker = ticker[i])
         
@@ -64,7 +64,7 @@ vectorized_load_data_and_get_etf_info <- function(ticker, stock_name = rep(NA, l
       
     } else {
       
-      data_list[[i]] <- kb.yahoo::load_data(
+      data_list[[i]] <- db_load_data(
         ticker = ticker[i], 
         from = from[i]
       )
@@ -75,6 +75,10 @@ vectorized_load_data_and_get_etf_info <- function(ticker, stock_name = rep(NA, l
       dplyr::select(Date, Close) %>% 
       dplyr::mutate(Close_dkk = Close * rate[i]) %>% 
       dplyr::select(-Close)
+    
+    #if (!is.null(data_list_final[[i]]$error)) {
+    #  browser()
+    #}
     
     names(data_list_final[[i]]) <- c("Date", str_ticker[i])
     

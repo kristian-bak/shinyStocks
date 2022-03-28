@@ -3,6 +3,7 @@
 add_stock_modal <- function(ns) {
   
   fluidPage(
+    shinyjs::useShinyjs(),
     fluidRow(
       column(8, 
              selectizeInput(
@@ -85,7 +86,9 @@ add_stock_modal <- function(ns) {
                ), 
                choices = c("", "USD", "EUR", "DKK", "SEK")
              )
-      ),
+      )
+    ),
+    fluidRow(
       column(4, 
              shinyWidgets::pickerInput(
                inputId = ns("select_sector"), 
@@ -100,9 +103,7 @@ add_stock_modal <- function(ns) {
                            "Information Technology", "Communication Services", 
                            "Real Estate")
              )
-      )
-    ),
-    fluidRow(
+      ),
       column(4, 
              selectInput(
                inputId = ns("select_type"), 
@@ -116,7 +117,37 @@ add_stock_modal <- function(ns) {
                label = "Market cap", 
                choices = c("Large", "Mid", "Small")
              )
+      )
+    ),
+    fluidRow(
+      column(4, 
+             shinyWidgets::pickerInput(
+               inputId = ns("select_strategy"), 
+               label = "Investment strategy", 
+               choices = c("Buy and hold", "Position trader")
+             )
       ),
+      column(4, 
+             numericInput(
+               inputId = ns("num_stop_loss"), 
+               label = "Stop loss", 
+               value = NA, 
+               min = 0, 
+               max = Inf, 
+               step = 0.5
+             )),
+      column(4, 
+             numericInput(
+               inputId = ns("num_take_profit"), 
+               label = "Take profit", 
+               value = NA, 
+               min = 0, 
+               max = Inf, 
+               step = 0.5
+             )
+      )
+    ),
+    fluidRow(
       column(4, 
              selectInput(
                inputId = ns("select_broker"), 

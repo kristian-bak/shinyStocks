@@ -1,0 +1,3 @@
+#' Notin
+#' 
+`%notin%` <- Negate(`%in%`)

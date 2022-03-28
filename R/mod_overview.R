@@ -308,7 +308,7 @@ mod_overview_server <- function(id){
         
       }
       
-      if (is.null(input$table_portfolio_rows_selected)) {
+      if (is.null(input$table_portfolio_rows_selected) | nrow(react_var$df_portfolio) == 1) {
         
         react_var$df_portfolio        <- NULL
         react_var$df_holdings         <- NULL
@@ -319,13 +319,27 @@ mod_overview_server <- function(id){
         
       } else {
         
+        n_rows_init <- nrow(react_var$df_portfolio)
         rows_selected <- input$table_portfolio_rows_selected
-        react_var$df_portfolio <- react_var$df_portfolio[-rows_selected, ]
-      
         ticker_selected <- react_var$df_portfolio$Ticker[rows_selected]
+        
+        #if (ticker_selected == "DKIDKIEXOMXC20D.CO") {
+        #  browser()
+        #}
+        
         ticker_selected <- stringify(ticker_selected)
         react_var$df_marked_value <- react_var$df_marked_value %>% 
           dplyr::select(-ticker_selected)
+        
+        id <- 1:n_rows_init
+        preserved_rows <- id[id %notin% rows_selected]
+
+        react_var$etf_info <- subset_list(
+          l = react_var$etf_info, 
+          element = preserved_rows
+        )
+        
+        react_var$df_portfolio <- react_var$df_portfolio[-rows_selected, ]
         
         #react_var$df_holdings         <- NULL
         #react_var$df_benchmark_geo    <- NULL
@@ -356,7 +370,8 @@ mod_overview_server <- function(id){
       if (!is.null(react_var$df_portfolio)) {
         
         df_portfolio <- df_portfolio %>% 
-          dplyr::mutate(Weight = 100 * Weight)
+          dplyr::mutate(Weight = 100 * Weight) %>% 
+          dplyr::select(-ETF, -Type, -Sector, -Cap, -Country, -Currency, -Date)
         
       }
       
@@ -443,6 +458,18 @@ mod_overview_server <- function(id){
       #if (input$go_calculate_marked_value > 1) {
       #  browser()
       #}
+      
+      if (is.null(react_var$df_marked_value)) {
+        
+        shinyWidgets::show_alert(
+          title = "Error", 
+          text = "You need to load data before calculating marked value", 
+          type = "error"
+        )
+        
+        return()
+        
+      }
       
       df_portfolio      <- react_var$df_portfolio
       etf_info          <- react_var$etf_info
@@ -790,6 +817,24 @@ mod_overview_server <- function(id){
             inputId = "select_currency", 
             selected = ""
           )
+      }
+      
+    })
+    
+    observe({
+      
+      req(input$select_strategy)
+      
+      if (input$select_strategy == "Buy and hold") {
+        
+        shinyjs::hide(id = "num_stop_loss")
+        shinyjs::hide(id = "num_take_profit")
+        
+      } else {
+        
+        shinyjs::show(id = "num_stop_loss")
+        shinyjs::show(id = "num_take_profit")
+        
       }
       
     })
