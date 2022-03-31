@@ -1,5 +1,7 @@
 test_that("vectorized_load_data_and_get_etf_info works", {
   
+  testthat::skip()
+  
   ticker <- c("NOVO-B.CO", "SPIC25KL.CO")
   stock_name <- c("NOVO", "Sparindex INDEX OMX C25 KL")
   from <- c("2022-03-17", "2022-03-17")

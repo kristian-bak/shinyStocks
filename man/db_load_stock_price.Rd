@@ -4,7 +4,7 @@
 \alias{db_load_stock_price}
 \title{Database load stock price}
 \usage{
-db_load_stock_price(ticker, folder_name = "stocks")
+db_load_stock_price(ticker, folder_name = "stocks", max_days = 3)
 }
 \arguments{
 \item{ticker}{ticker code}

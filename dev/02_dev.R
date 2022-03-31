@@ -10,6 +10,8 @@ golem::document_and_reload()
 # Run the application
 run_app()
 
+devtools::check()
+
 ## Bump version number
 usethis::use_version()
 
@@ -32,6 +34,7 @@ usethis::use_package("shinycssloaders")
 usethis::use_package("plotly")
 usethis::use_package("TTR")
 usethis::use_package("purrr")
+usethis::use_package("formattable")
 
 remotes::install_github(repo = "https://github.com/kristian-bak/kb.yahoo/")
 

@@ -5,7 +5,7 @@ save_portfolio <- function(df_portfolio, id) {
   
   file_name_rda <- paste0(id, ".rda")
   
-  file_rda <- paste0("./data/", file_name_rda)
+  file_rda <- paste0("./data/portfolios/", file_name_rda)
   
   save(df_portfolio, file = file_rda)
   

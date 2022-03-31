@@ -4,7 +4,7 @@
 \alias{db_load_data}
 \title{Database load data}
 \usage{
-db_load_data(ticker, from, folder_name = "stocks")
+db_load_data(ticker, from, folder_name = "stocks", max_days = 3)
 }
 \arguments{
 \item{ticker}{ticker code}
@@ -12,6 +12,8 @@ db_load_data(ticker, from, folder_name = "stocks")
 \item{from}{from date}
 
 \item{folder_name}{name of folder used as database}
+
+\item{max_days}{max days since last load (default: 3)}
 }
 \description{
 Database load data

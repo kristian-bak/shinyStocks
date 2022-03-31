@@ -1,3 +1,8 @@
+# shinyStocks 0.7.0
+
+* Allowing to skip data load if data has been loaded at most max_days since
+* Ensuring deleting row in portfolio works even if data hasn't been loaded first
+
 # shinyStocks 0.6.0
 
 Improvements:

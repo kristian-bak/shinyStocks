@@ -4,7 +4,7 @@
 \alias{get_etf_info}
 \title{Get ETF info}
 \usage{
-get_etf_info(stock_name, ticker)
+get_etf_info(stock_name, ticker, max_days = 3)
 }
 \arguments{
 \item{stock_name}{stock name}

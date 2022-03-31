@@ -327,17 +327,21 @@ mod_overview_server <- function(id){
         #  browser()
         #}
         
-        ticker_selected <- stringify(ticker_selected)
-        react_var$df_marked_value <- react_var$df_marked_value %>% 
-          dplyr::select(-ticker_selected)
-        
-        id <- 1:n_rows_init
-        preserved_rows <- id[id %notin% rows_selected]
-
-        react_var$etf_info <- subset_list(
-          l = react_var$etf_info, 
-          element = preserved_rows
-        )
+        if (is_not_null(react_var$df_marked_value)) {
+          
+          ticker_selected <- stringify(ticker_selected)
+          react_var$df_marked_value <- react_var$df_marked_value %>% 
+            dplyr::select(-ticker_selected)
+          
+          id <- 1:n_rows_init
+          preserved_rows <- id[id %notin% rows_selected]
+          
+          react_var$etf_info <- subset_list(
+            l = react_var$etf_info, 
+            element = preserved_rows
+          )
+          
+        }
         
         react_var$df_portfolio <- react_var$df_portfolio[-rows_selected, ]
         
@@ -370,8 +374,7 @@ mod_overview_server <- function(id){
       if (!is.null(react_var$df_portfolio)) {
         
         df_portfolio <- df_portfolio %>% 
-          dplyr::mutate(Weight = 100 * Weight) %>% 
-          dplyr::select(-ETF, -Type, -Sector, -Cap, -Country, -Currency, -Date)
+          dplyr::mutate(Weight = 100 * Weight)
         
       }
       
@@ -741,7 +744,7 @@ mod_overview_server <- function(id){
       
       for (i in 1:n) {
         
-        f_name <- paste0("./data/", file_name[i], ".rda")
+        f_name <- paste0("./data/portfolios/", file_name[i], ".rda")
         
         df_portfolio_loaded <- load(file = f_name)
         df_portfolio_loaded <- mget(df_portfolio_loaded)$df_portfolio

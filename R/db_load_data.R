@@ -2,11 +2,12 @@
 #' @param ticker ticker code
 #' @param from from date
 #' @param folder_name name of folder used as database
-db_load_data <- function(ticker, from, folder_name = "stocks") {
+#' @param max_days max days since last load (default: 3)
+db_load_data <- function(ticker, from, folder_name = "stocks", max_days = 3) {
   
   file_name <- get_file_name(stock_name = ticker, folder_name = folder_name)
   
-  if (file.exists(file_name)) {
+  if (check_file_in_db(file = file_name, max_days = max_days)) {
     
     out <- readRDS(file = file_name)
     
