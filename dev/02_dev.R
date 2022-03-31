@@ -10,6 +10,7 @@ golem::document_and_reload()
 # Run the application
 run_app()
 
+## Run all checks
 devtools::check()
 
 ## Bump version number
@@ -22,6 +23,10 @@ usethis::use_test("vectorized_load_data_and_get_etf_info")
 renv::status()
 renv::snapshot()
 
+## Deploy
+rsconnect::deployApp()
+
+## Add dependency
 usethis::use_package("shinydashboard")
 usethis::use_package("htmltools")
 usethis::use_package("DT")

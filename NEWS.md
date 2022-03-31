@@ -1,3 +1,7 @@
+# shinyStocks 0.7.1
+
+* Fixing bugs related to ensure proper deployment to rsconnect
+
 # shinyStocks 0.7.0
 
 * Allowing to skip data load if data has been loaded at most max_days since

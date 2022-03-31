@@ -308,7 +308,11 @@ mod_overview_server <- function(id){
         
       }
       
-      if (is.null(input$table_portfolio_rows_selected) | nrow(react_var$df_portfolio) == 1) {
+      rows_selected <- input$table_portfolio_rows_selected
+      entire_table_selected <- is.null(rows_selected)
+      all_rows_selected <- length(rows_selected) == nrow(react_var$df_portfolio)
+      
+      if (entire_table_selected | all_rows_selected) {
         
         react_var$df_portfolio        <- NULL
         react_var$df_holdings         <- NULL
@@ -320,13 +324,9 @@ mod_overview_server <- function(id){
       } else {
         
         n_rows_init <- nrow(react_var$df_portfolio)
-        rows_selected <- input$table_portfolio_rows_selected
         ticker_selected <- react_var$df_portfolio$Ticker[rows_selected]
         
-        #if (ticker_selected == "DKIDKIEXOMXC20D.CO") {
-        #  browser()
-        #}
-        
+        ## If data hasn't been loaded yet
         if (is_not_null(react_var$df_marked_value)) {
           
           ticker_selected <- stringify(ticker_selected)
@@ -351,7 +351,12 @@ mod_overview_server <- function(id){
         #react_var$df_holdings_agg     <- NULL
         #react_var$df_sector           <- NULL
         
-        rownames(react_var$df_portfolio) <- 1:nrow(react_var$df_portfolio)
+        # Update row numbers (provided the table contains at least one row)
+        if (nrow(react_var$df_portfolio) > 0) {
+          
+          rownames(react_var$df_portfolio) <- 1:nrow(react_var$df_portfolio)
+          
+        }
         
       }
       
@@ -448,7 +453,11 @@ mod_overview_server <- function(id){
           type = "error"
         )
         
-        browser()
+        print(out$error)
+        
+        list.files()
+        
+        list.files("data", recursive = TRUE)
         
         return()
         
@@ -744,7 +753,7 @@ mod_overview_server <- function(id){
       
       for (i in 1:n) {
         
-        f_name <- paste0("./data/portfolios/", file_name[i], ".rda")
+        f_name <- paste0("data/portfolios/", file_name[i], ".rda")
         
         df_portfolio_loaded <- load(file = f_name)
         df_portfolio_loaded <- mget(df_portfolio_loaded)$df_portfolio

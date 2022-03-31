@@ -7,7 +7,7 @@
 add_rates(data)
 }
 \arguments{
-\item{data}{}
+\item{data}{data.frame}
 }
 \description{
 Add rates

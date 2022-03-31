@@ -9,7 +9,7 @@ update_log <- function(df_log, id, new_date) {
                   
   file_name_txt <- "shinyStocksLog.txt"
   
-  file_txt <- paste0("./data/portfolios/", file_name_txt)
+  file_txt <- paste0("data/portfolios/", file_name_txt)
   
   write.table(x = df_log_new, file = file_txt,  
               append = FALSE, quote = FALSE, row.names = FALSE, col.names = TRUE, sep = ";")
