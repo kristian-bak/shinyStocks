@@ -15,6 +15,7 @@ devtools::test()
 
 ## Run specific test
 devtools::test(filter = "initialize_log_table")
+devtools::test(filter = "load_portfolio")
 
 ## Run all checks
 devtools::check()
@@ -27,6 +28,7 @@ usethis::use_test("add_stock_modal")
 usethis::use_test("initialize_log_table")
 usethis::use_test("is")
 usethis::use_test("is_sparindex")
+usethis::use_test("load_portfolio")
 usethis::use_test("map_country_to_region")
 usethis::use_test("vectorized_load_data_and_get_etf_info")
 usethis::use_test("generate_id")

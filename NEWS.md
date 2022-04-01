@@ -1,3 +1,7 @@
+# shinyStocks 0.7.3
+
+* Creating `load_portfolio`
+
 # shinyStocks 0.7.2
 
 * Adding several unit tests

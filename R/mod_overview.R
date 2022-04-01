@@ -749,36 +749,18 @@ mod_overview_server <- function(id){
         dplyr::slice(row_nr) %>% 
         dplyr::pull(ID)
       
-      n <- length(file_name)
-      
-      for (i in 1:n) {
-        
-        f_name <- paste0("data/portfolios/", file_name[i], ".rda")
-        
-        df_portfolio_loaded <- load(file = f_name)
-        df_portfolio_loaded <- mget(df_portfolio_loaded)$df_portfolio
-        
-        if (input$check_overwrite_portfolio) {
-          
-          react_var$df_portfolio <- df_portfolio_loaded
-          
-        } else {
-          
-          react_var$df_portfolio <- rbind(
-            react_var$df_portfolio,
-            df_portfolio_loaded
-          )
-          
-        }
-        
-      }
+      react_var$df_portfolio <- load_portfolio(
+        file_name = file_name, 
+        overwrite_portfolio = input$check_overwrite_portfolio, 
+        df = react_var$df_portfolio
+      )
       
       removeModal()
       
     })
     
     output$table_saved_portfolios <- DT::renderDataTable(
-      expr = DT::datatable(react_var$df_saved_portfolios, selection = "single")
+      expr = DT::datatable(react_var$df_saved_portfolios)
     )
     
     output$table_holdings <- DT::renderDataTable({
