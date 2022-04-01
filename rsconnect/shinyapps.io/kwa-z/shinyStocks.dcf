@@ -5,7 +5,7 @@ account: kwa-z
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 5449719
-bundleId: 5751046
+bundleId: 5752973
 url: https://k-bak.shinyapps.io/shinyStocks/
-when: 1648753786.02439
-lastSyncTime: 1648753786.02439
+when: 1648801449.76842
+lastSyncTime: 1648801449.76842
