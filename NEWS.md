@@ -1,3 +1,7 @@
+# shinyStocks 0.7.2
+
+* Adding several unit tests
+
 # shinyStocks 0.7.1
 
 * Fixing bugs related to ensure proper deployment to rsconnect
