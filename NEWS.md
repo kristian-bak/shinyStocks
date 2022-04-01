@@ -1,3 +1,7 @@
+# shinyStocks 0.7.4
+
+* Adding `delete_portfolio`
+
 # shinyStocks 0.7.3
 
 * Creating `load_portfolio`

@@ -286,7 +286,9 @@ mod_overview_server <- function(id){
     
     observeEvent(input$go_delete, {
       
-      str_text <- get_delete_text(rows_selected = input$table_portfolio_rows_selected)
+      str_text <- get_delete_text(
+        rows_selected = input$table_portfolio_rows_selected
+      )
       
       shinyWidgets::ask_confirmation(
         inputId = ns("go_confirm_delete"), 
@@ -302,61 +304,37 @@ mod_overview_server <- function(id){
     
     observeEvent(input$go_confirm_delete, {
       
-      if (!input$go_confirm_delete) {
-        
-        return()
-        
-      }
+      req(input$go_confirm_delete)
       
       rows_selected <- input$table_portfolio_rows_selected
-      entire_table_selected <- is.null(rows_selected)
-      all_rows_selected <- length(rows_selected) == nrow(react_var$df_portfolio)
       
-      if (entire_table_selected | all_rows_selected) {
+      delete_everything <- delete_it_all(
+        df_portfolio  = react_var$df_portfolio, 
+        rows_selected = rows_selected
+      )
+      
+      if (delete_everything) {
         
-        react_var$df_portfolio        <- NULL
-        react_var$df_holdings         <- NULL
-        react_var$df_benchmark_geo    <- NULL
-        react_var$df_benchmark_sector <- NULL
-        react_var$df_holdings_agg     <- NULL
-        react_var$df_sector           <- NULL
+        out <- delete_portfolio()
+        
+        react_var$df_portfolio        <- out$df_portfolio
+        react_var$df_holdings         <- out$df_holdings
+        react_var$df_benchmark_geo    <- out$df_benchmark_geo
+        react_var$df_benchmark_sector <- out$df_benchmark_sector
+        react_var$df_sector           <- out$df_sector
         
       } else {
         
-        n_rows_init <- nrow(react_var$df_portfolio)
-        ticker_selected <- react_var$df_portfolio$Ticker[rows_selected]
+        out <- delete_rows_from_portfolio(
+          df_portfolio    = react_var$df_portfolio, 
+          df_marked_value = react_var$df_marked_value, 
+          etf_info        = react_var$etf_info, 
+          rows_selected   = rows_selected
+        ) 
         
-        ## If data hasn't been loaded yet
-        if (is_not_null(react_var$df_marked_value)) {
-          
-          ticker_selected <- stringify(ticker_selected)
-          react_var$df_marked_value <- react_var$df_marked_value %>% 
-            dplyr::select(-ticker_selected)
-          
-          id <- 1:n_rows_init
-          preserved_rows <- id[id %notin% rows_selected]
-          
-          react_var$etf_info <- subset_list(
-            l = react_var$etf_info, 
-            element = preserved_rows
-          )
-          
-        }
-        
-        react_var$df_portfolio <- react_var$df_portfolio[-rows_selected, ]
-        
-        #react_var$df_holdings         <- NULL
-        #react_var$df_benchmark_geo    <- NULL
-        #react_var$df_benchmark_sector <- NULL
-        #react_var$df_holdings_agg     <- NULL
-        #react_var$df_sector           <- NULL
-        
-        # Update row numbers (provided the table contains at least one row)
-        if (nrow(react_var$df_portfolio) > 0) {
-          
-          rownames(react_var$df_portfolio) <- 1:nrow(react_var$df_portfolio)
-          
-        }
+        react_var$df_portfolio    <- out$df_portfolio
+        react_var$df_marked_value <- out$df_marked_value
+        react_var$etf_info        <- out$etf_info
         
       }
       
@@ -364,6 +342,7 @@ mod_overview_server <- function(id){
     
     observeEvent(input$go_confirm_loading, {
       
+      # Resetting tables
       react_var$df_holdings         <- NULL
       react_var$df_benchmark_geo    <- NULL
       react_var$df_benchmark_sector <- NULL
@@ -453,12 +432,6 @@ mod_overview_server <- function(id){
           type = "error"
         )
         
-        print(out$error)
-        
-        list.files()
-        
-        list.files("data", recursive = TRUE)
-        
         return()
         
       }
@@ -466,10 +439,6 @@ mod_overview_server <- function(id){
     })
     
     observeEvent(input$go_calculate_marked_value, {
-      
-      #if (input$go_calculate_marked_value > 1) {
-      #  browser()
-      #}
       
       if (is.null(react_var$df_marked_value)) {
         
@@ -555,9 +524,7 @@ mod_overview_server <- function(id){
     
     output$table_benchmark_geo <- formattable::renderFormattable({
       
-      if (is.null(react_var$df_benchmark_geo)) {
-        return()
-      }
+      req(react_var$df_benchmark_geo)
       
       formattable::formattable(react_var$df_benchmark_geo, colors_geo)
       
@@ -565,9 +532,7 @@ mod_overview_server <- function(id){
     
     output$table_benchmark_sector <- formattable::renderFormattable({
       
-      if (is.null(react_var$df_benchmark_sector)) {
-        return()
-      }
+      req(react_var$df_benchmark_sector)
       
       formattable::formattable(react_var$df_benchmark_sector, colors_sector)
       
@@ -656,7 +621,13 @@ mod_overview_server <- function(id){
       
       initialize_log_table()
       
-      if (is_not_null(input$table_saved_portfolios_rows_selected) & is_not_blank(input$type_user) & is_not_blank(input$type_portfolio)) {
+      rows_selected <- input$table_saved_portfolios_rows_selected
+      
+      go_monkey <- is_not_null(rows_selected) & 
+        is_not_blank(input$type_user) & 
+        is_not_blank(input$type_portfolio)
+      
+      if (go_monkey) {
         shinyWidgets::show_alert(
           title = "Error", 
           text = "Either click on a row and thereby save existing portfolio or fill out user name and portfolio name and save new portfolio", 
@@ -666,12 +637,12 @@ mod_overview_server <- function(id){
         
       }
       
-      if (is_not_null(input$table_saved_portfolios_rows_selected)) {
+      if (is_not_null(rows_selected)) {
         
         df_log <- read_log()
         
         id <- df_log %>% 
-          dplyr::slice(input$table_saved_portfolios_rows_selected) %>% 
+          dplyr::slice(rows_selected) %>% 
           dplyr::pull(ID)
         
         update_log(
@@ -765,9 +736,7 @@ mod_overview_server <- function(id){
     
     output$table_holdings <- DT::renderDataTable({
       
-      if (is.null(react_var$df_holdings_agg)) {
-        return()
-      }
+      req(react_var$df_holdings_agg)
       
       ft <- formattable::formattable(react_var$df_holdings_agg)
       
