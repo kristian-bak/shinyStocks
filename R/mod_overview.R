@@ -298,15 +298,15 @@ mod_overview_server <- function(id){
       } else {
         
         out <- delete_rows_from_portfolio(
-          df_portfolio    = react_var$df_portfolio, 
-          df_marked_value = react_var$df_marked_value, 
-          etf_info        = react_var$etf_info, 
-          rows_selected   = rows_selected
+          df_portfolio     = react_var$df_portfolio, 
+          df_closing_price = react_var$df_closing_price, 
+          etf_info         = react_var$etf_info, 
+          rows_selected    = rows_selected
         ) 
         
-        react_var$df_portfolio    <- out$df_portfolio
-        react_var$df_marked_value <- out$df_marked_value
-        react_var$etf_info        <- out$etf_info
+        react_var$df_portfolio     <- out$df_portfolio
+        react_var$df_closing_price <- out$df_closing_price
+        react_var$etf_info         <- out$etf_info
         
       }
       
@@ -393,14 +393,15 @@ mod_overview_server <- function(id){
       
       if (is.null(out$error)) {
         
-        react_var$df_marked_value <- out$value$df_marked_value
+        react_var$df_closing_price <- out$value$df_closing_price
         react_var$etf_info <- out$value$etf_list
         
       } else {
         
         shinyWidgets::show_alert(
           title = "Error", 
-          text = "Loading failed for one of the stocks. The error most likely occured because the selected ticker code doesn't exist", 
+          text = paste0("Loading failed for one of the stocks. The error most likely occured because the selected ticker code doesn't exist. ",
+          "The complete error message is: ", out$error), 
           type = "error"
         )
         
@@ -412,7 +413,7 @@ mod_overview_server <- function(id){
     
     observeEvent(input$go_calculate_marked_value, {
       
-      if (is.null(react_var$df_marked_value)) {
+      if (is.null(react_var$df_closing_price)) {
         
         shinyWidgets::show_alert(
           title = "Error", 
@@ -425,9 +426,9 @@ mod_overview_server <- function(id){
       }
       
       out <- calculate_marked_value(
-        df_portfolio    = react_var$df_portfolio, 
-        etf_info        = react_var$etf_info, 
-        df_marked_value = react_var$df_marked_value
+        df_portfolio     = react_var$df_portfolio, 
+        etf_info         = react_var$etf_info, 
+        df_closing_price = react_var$df_closing_price
       )
       
       react_var$df_portfolio        <- out$df_portfolio

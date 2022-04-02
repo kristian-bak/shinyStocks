@@ -6,7 +6,7 @@
 \usage{
 delete_rows_from_portfolio(
   df_portfolio,
-  df_marked_value,
+  df_closing_price,
   etf_info,
   rows_selected
 )
@@ -14,7 +14,7 @@ delete_rows_from_portfolio(
 \arguments{
 \item{df_portfolio}{data.frame with stocks}
 
-\item{df_marked_value}{data.frame with marked_value for each stock}
+\item{df_closing_price}{data.frame with Date and closing price in DKK for each stock}
 
 \item{etf_info}{list with ETF info (NULL for stocks)}
 

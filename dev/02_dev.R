@@ -26,6 +26,7 @@ usethis::use_version()
 ## Add test:
 usethis::use_test("add_stock_modal")
 usethis::use_test("delete_portfolio")
+usethis::use_test("calculate_marked_value")
 usethis::use_test("initialize_log_table")
 usethis::use_test("is")
 usethis::use_test("is_sparindex")

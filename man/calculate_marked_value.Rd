@@ -7,7 +7,7 @@
 calculate_marked_value(
   df_portfolio,
   etf_info,
-  df_marked_value,
+  df_closing_price,
   benchmark_name = "iShares MSCI ACWI UCITS ETF",
   benchmark_ticker = "IUSQ.DE"
 )
@@ -17,7 +17,8 @@ calculate_marked_value(
 
 \item{etf_info}{list with ETF info}
 
-\item{df_marked_value}{data.frame with marked value column for each stock}
+\item{df_closing_price}{data.frame with Date and and a column for each stock 
+with closing price in DKK}
 
 \item{benchmark_name}{character string with benchmark name}
 

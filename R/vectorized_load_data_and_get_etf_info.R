@@ -76,10 +76,6 @@ vectorized_load_data_and_get_etf_info <- function(ticker, stock_name = rep(NA, l
       dplyr::mutate(Close_dkk = Close * rate[i]) %>% 
       dplyr::select(-Close)
     
-    #if (!is.null(data_list_final[[i]]$error)) {
-    #  browser()
-    #}
-    
     names(data_list_final[[i]]) <- c("Date", str_ticker[i])
     
     if (is.function(updateProgress)) {
@@ -89,11 +85,11 @@ vectorized_load_data_and_get_etf_info <- function(ticker, stock_name = rep(NA, l
 
   }
   
-  df_marked_value <- full_join_list(.l = data_list_final, by = "Date")
+  df_closing_price <- full_join_list(.l = data_list_final, by = "Date")
   
   out <- list(
-    "df_marked_value" = df_marked_value,
-    "etf_list"        = etf_list
+    "df_closing_price" = df_closing_price,
+    "etf_list"         = etf_list
   )
   
   return(out)

@@ -1,3 +1,7 @@
+# shinyStocks 0.7.5
+
+* Updating `calculate_marked_value`
+
 # shinyStocks 0.7.4
 
 * Adding `delete_portfolio`

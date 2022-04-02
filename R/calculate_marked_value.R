@@ -1,16 +1,17 @@
 #' Calculate marked value
 #' @param df_portfolio data.frame with stocks
 #' @param etf_info list with ETF info
-#' @param df_marked_value data.frame with marked value column for each stock
+#' @param df_closing_price data.frame with Date and and a column for each stock 
+#' with closing price in DKK
 #' @param benchmark_name character string with benchmark name
 #' @param benchmark_ticker character string with benchmark ticker
 #' 
-calculate_marked_value <- function(df_portfolio, etf_info, df_marked_value, 
+calculate_marked_value <- function(df_portfolio, etf_info, df_closing_price, 
                                    benchmark_name = "iShares MSCI ACWI UCITS ETF", 
                                    benchmark_ticker = "IUSQ.DE") {
   
   str_ticker        <- stringify(x = df_portfolio$Ticker)
-  closing_price_dkk <- df_marked_value %>% dplyr::select(-Date)
+  closing_price_dkk <- df_closing_price %>% dplyr::select(-Date)
   n_stocks          <- df_portfolio$Stocks
   
   marked_value_today <- sapply(
@@ -50,6 +51,30 @@ calculate_marked_value <- function(df_portfolio, etf_info, df_marked_value,
     df_holdings    = df_holdings, 
     benchmark_info = list_benchmark$country_info, 
     var = "Region"
+  )
+  
+  info_diff_col <- as.character(
+    add_info_circle(
+      label = "Difference", 
+      placement = "right", 
+      content = "Green = buy and red = sell"
+    )
+  )
+  
+  info_benchmark_col <- as.character(
+    add_info_circle(
+      label = "Benchmark", 
+      placement = "right", 
+      content = "The benchmark is MSCI All Countries World Index (ACWI)"
+    )
+  )
+  
+  info_region_other <- as.character(
+    add_info_circle(
+      label = "Other", 
+      placement = "right", 
+      content = "Canada, Australia and other countries"
+    )
   )
   
   names(df_benchmark_geo) <- c("Region", "Portfolio", info_benchmark_col, info_diff_col)

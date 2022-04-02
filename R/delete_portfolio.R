@@ -14,20 +14,20 @@ delete_portfolio <- function() {
 
 #' Delete rows from portfolio
 #' @param df_portfolio data.frame with stocks
-#' @param df_marked_value data.frame with marked_value for each stock
+#' @param df_closing_price data.frame with Date and closing price in DKK for each stock
 #' @param etf_info list with ETF info (NULL for stocks)
 #' @param rows_selected index vector corresponding to rows to delete
 #' 
-delete_rows_from_portfolio <- function(df_portfolio, df_marked_value, etf_info, rows_selected) {
+delete_rows_from_portfolio <- function(df_portfolio, df_closing_price, etf_info, rows_selected) {
   
   n_rows_init <- nrow(df_portfolio)
   ticker_selected <- df_portfolio$Ticker[rows_selected]
   
   ## If data has been loaded, then update marked value
-  if (is_not_null(df_marked_value)) {
+  if (is_not_null(df_closing_price)) {
     
     ticker_selected <- stringify(ticker_selected)
-    df_marked_value <- df_marked_value %>% 
+    df_closing_price <- df_closing_price %>% 
       dplyr::select(-ticker_selected)
     
     id <- 1:n_rows_init
@@ -49,9 +49,9 @@ delete_rows_from_portfolio <- function(df_portfolio, df_marked_value, etf_info, 
     
   }
   
-  out <- list("df_portfolio" = df_portfolio, 
-              "df_marked_value" = df_marked_value, 
-              "etf_info" = etf_info)
+  out <- list("df_portfolio"     = df_portfolio, 
+              "df_closing_price" = df_closing_price, 
+              "etf_info"         = etf_info)
   
   return(out)
   

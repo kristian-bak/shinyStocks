@@ -19,8 +19,8 @@ test_that("vectorized_load_data_and_get_etf_info works", {
     rate = rate
   )
   
-  testthat::expect_true(!is.na(res1$df_marked_value$NOVO_B_CO[1]))
+  testthat::expect_true(!is.na(res1$df_closing_price$NOVO_B_CO[1]))
   
-  testthat::expect_true(!is.na(res2$df_marked_value$Date[1]))
+  testthat::expect_true(!is.na(res2$df_closing_price$Date[1]))
   
 })
