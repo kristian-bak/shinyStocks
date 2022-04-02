@@ -127,21 +127,12 @@ mod_overview_server <- function(id){
     
     react_stock_name <- reactive({
       
-      if (is.null(input$type_ticker)) {
-        return()
-      }
-      
-      stock_name <- get_stock_name(
-        ticker = input$type_ticker, 
-        df = df_stocks, 
-        shiny = TRUE
+      # Reactive stock name based on ticker input
+      react_on_ticker_input(
+        df_stocks = df_stocks, 
+        stock_name = input$type_stock, 
+        ticker = input$type_ticker
       )
-      
-      if (length(stock_name) == 0) {
-        return(input$type_stock)
-      } else {
-        return(stock_name)
-      }
       
     })
     
@@ -155,33 +146,14 @@ mod_overview_server <- function(id){
       
     })
     
-    observe({
-      
-      if (!is.null(input$type_stock) & !is.null(input$type_ticker)) {
-        if (input$type_stock == "Danske Bank") {
-          #browser()
-        }
-      }
-      
-    })
-    
     react_ticker <- reactive({
       
-      if (is.null(input$type_stock)) {
-        return()
-      }
-      
-      ticker <- get_ticker(
+      # Reactive ticker code based on stock input
+      react_on_stock_input(
+        df_stocks = df_stocks, 
         stock_name = input$type_stock, 
-        df = df_stocks, 
-        shiny = TRUE
+        ticker = input$type_ticker
       )
-      
-      if (length(ticker) == 0) {
-        return(input$type_ticker)
-      } else {
-        return(ticker)
-      }
       
     })
     
@@ -411,10 +383,10 @@ mod_overview_server <- function(id){
       
       out <- catch_error(
         vectorized_load_data_and_get_etf_info(
-          ticker = df_portfolio$Ticker,
-          stock_name = df_portfolio$Stock,
-          from = df_portfolio$Date, 
-          rate = df_portfolio$Rate, 
+          ticker         = df_portfolio$Ticker,
+          stock_name     = df_portfolio$Stock,
+          from           = df_portfolio$Date, 
+          rate           = df_portfolio$Rate, 
           updateProgress = updateProgress
         )
       )
@@ -452,66 +424,19 @@ mod_overview_server <- function(id){
         
       }
       
-      df_portfolio      <- react_var$df_portfolio
-      etf_info          <- react_var$etf_info
-      str_ticker        <- stringify(x = df_portfolio$Ticker)
-      closing_price_dkk <- react_var$df_marked_value %>% dplyr::select(-Date)
-      n_stocks          <- df_portfolio$Stocks
-        
-      marked_value_today <- sapply(
-        X = closing_price_dkk, 
-        FUN = get_market_value_today
-      ) * n_stocks
-      
-      total_marked_value <- sum(marked_value_today)
-      
-      df_portfolio <- df_portfolio %>% 
-        dplyr::mutate(Region = map_country_to_region(x = Country),
-                      Marked_value = marked_value_today, 
-                      Weight = round(Marked_value / total_marked_value, 3))
-      
-      res <- get_holdings(
-        df_portfolio = df_portfolio, 
-        etf_info = etf_info
+      out <- calculate_marked_value(
+        df_portfolio    = react_var$df_portfolio, 
+        etf_info        = react_var$etf_info, 
+        df_marked_value = react_var$df_marked_value
       )
       
-      react_var$df_holdings <- res$df_holdings
-      react_var$df_holdings_agg <- res$df_holdings_agg
-      
-      react_var$df_portfolio <- df_portfolio %>% 
-        dplyr::select(-Region)
-      
-      react_var$df_sector <- react_var$df_holdings %>% 
-        remove_cash(var = Sector)
-      
-      react_var$list_benchmark <- load_benchmark_info(
-        df_portfolio = df_portfolio, 
-        etf_info = etf_info, 
-        benchmark_name = "iShares MSCI ACWI UCITS ETF", 
-        benchmark_ticker = "IUSQ.DE"
-      )
-      
-      df_benchmark_geo <- compare_with_benchmark_portfolio(
-        df_holdings    = react_var$df_holdings, 
-        benchmark_info = react_var$list_benchmark$country_info, 
-        var = "Region"
-      )
-      
-      names(df_benchmark_geo) <- c("Region", "Portfolio", info_benchmark_col, info_diff_col)
-      
-      df_benchmark_geo$Region[df_benchmark_geo$Region == "Other"] <- info_region_other
-      
-      react_var$df_benchmark_geo <- df_benchmark_geo
-      
-      df_benchmark_sector <- compare_with_benchmark_portfolio(
-        df_holdings    = react_var$df_sector, 
-        benchmark_info = react_var$list_benchmark$sector_info %>% remove_cash(var = Sector), 
-        var = "Sector"
-      )
-      
-      names(df_benchmark_sector) <- c("Sector", "Portfolio", info_benchmark_col, info_diff_col)
-      
-      react_var$df_benchmark_sector <- df_benchmark_sector
+      react_var$df_portfolio        <- out$df_portfolio
+      react_var$df_holdings         <- out$df_holdings
+      react_var$df_holdings_agg     <- out$df_holdings_agg
+      react_var$df_sector           <- out$df_sector
+      react_var$list_benchmark      <- out$list_benchmark
+      react_var$df_benchmark_geo    <- out$df_benchmark_geo
+      react_var$df_benchmark_sector <- out$df_benchmark_sector
       
     })
     
@@ -623,6 +548,7 @@ mod_overview_server <- function(id){
       
       rows_selected <- input$table_saved_portfolios_rows_selected
       
+      ## The monkey selected an existing portfolio and tried to create a new one at the same time
       go_monkey <- is_not_null(rows_selected) & 
         is_not_blank(input$type_user) & 
         is_not_blank(input$type_portfolio)
