@@ -1,3 +1,7 @@
+# shinyStocks 0.7.7
+
+* Fixing bug related to deleting stock for portfolios where the last element is a stock
+
 # shinyStocks 0.7.6
 
 * Replacing scandinavian letters in stock name

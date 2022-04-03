@@ -296,7 +296,7 @@ mod_overview_server <- function(id){
         react_var$df_sector           <- out$df_sector
         
       } else {
-        
+          
         out <- delete_rows_from_portfolio(
           df_portfolio     = react_var$df_portfolio, 
           df_closing_price = react_var$df_closing_price, 

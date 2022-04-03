@@ -69,6 +69,9 @@ vectorized_load_data_and_get_etf_info <- function(ticker, stock_name = rep(NA, l
         from = from[i]
       )
       
+      etf_list[[i]] <- list("stock_name" = stock_name[i], 
+                            "ticker" = ticker[i])
+      
     }
     
     data_list_final[[i]] <- data_list[[i]] %>% 
