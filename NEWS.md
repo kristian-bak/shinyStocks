@@ -1,3 +1,7 @@
+# shinyStocks 0.7.6
+
+* Replacing scandinavian letters in stock name
+
 # shinyStocks 0.7.5
 
 * Updating `calculate_marked_value`
