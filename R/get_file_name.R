@@ -14,6 +14,12 @@ get_file_name <- function(stock_name, folder_name = "etf_info") {
     
   }
   
+  if (contains_scandinavian_letters(str_stock_name)) {
+    
+    str_stock_name <- replace_scandinavian_letters(str_stock_name)
+    
+  }
+  
   subfolder <- paste0("data/", folder_name, "/")
   file_name <- paste0(subfolder, str_stock_name, ".RDS")
   
