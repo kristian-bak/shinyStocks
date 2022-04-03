@@ -2,11 +2,11 @@
 #' @param stock_name stock name
 #' @param ticker ticker code
 #' 
-get_etf_info <- function(stock_name, ticker) {
+get_etf_info <- function(stock_name, ticker, max_days = 3) {
   
   file_name <- get_file_name(stock_name = stock_name)
   
-  if (file.exists(file_name)) {
+  if (check_file_in_db(file = file_name, max_days = max_days)) {
     
     out <- readRDS(file = file_name)
     

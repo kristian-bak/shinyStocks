@@ -4,7 +4,7 @@
 \alias{get_file_name}
 \title{Get file name}
 \usage{
-get_file_name(stock_name)
+get_file_name(stock_name, folder_name = "etf_info")
 }
 \arguments{
 \item{stock_name}{stock name}

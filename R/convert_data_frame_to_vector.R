@@ -1,5 +1,5 @@
 #' Convert data frame to vector
-#' @param data
+#' @param data data.frame
 #' 
 convert_data_frame_to_vector <- function(data) {
   

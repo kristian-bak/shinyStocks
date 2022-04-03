@@ -10,6 +10,7 @@ load_example_portfolio <- function() {
     "ADIDAS N AG",          "ADS.DE",    "2022-01-03", 254,    10,      "Germany", "EUR",     "No", "Value",  "Consumer Discretionary", "Large", "Saxo Bank",   NA,    NA,            NA,
     "VOLVO CLASS B",        "VOLV-B.ST", "2022-01-03", 210,    100,     "Sweden",  "SEK",     "No", "Value",  "Consumer Discretionary", "Large", "Saxo Bank",   NA,    NA,            NA
   ) %>% 
-    dplyr::mutate(Date = as.Date(Date))
+    dplyr::mutate(Date = as.Date(Date)) %>% 
+    as.data.frame() ## Setting row names on a tibble is deprecated so converting to data.frame
   
 }

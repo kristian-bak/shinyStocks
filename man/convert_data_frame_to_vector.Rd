@@ -7,7 +7,7 @@
 convert_data_frame_to_vector(data)
 }
 \arguments{
-\item{data}{}
+\item{data}{data.frame}
 }
 \description{
 Convert data frame to vector

@@ -1,5 +1,5 @@
 #' Add rates
-#' @param data
+#' @param data data.frame
 #' 
 add_rates <- function(data) {
   

@@ -1,3 +1,32 @@
+# shinyStocks 0.7.6
+
+* Replacing scandinavian letters in stock name
+
+# shinyStocks 0.7.5
+
+* Updating `calculate_marked_value`
+
+# shinyStocks 0.7.4
+
+* Adding `delete_portfolio`
+
+# shinyStocks 0.7.3
+
+* Creating `load_portfolio`
+
+# shinyStocks 0.7.2
+
+* Adding several unit tests
+
+# shinyStocks 0.7.1
+
+* Fixing bugs related to ensure proper deployment to rsconnect
+
+# shinyStocks 0.7.0
+
+* Allowing to skip data load if data has been loaded at most max_days since
+* Ensuring deleting row in portfolio works even if data hasn't been loaded first
+
 # shinyStocks 0.6.0
 
 Improvements:

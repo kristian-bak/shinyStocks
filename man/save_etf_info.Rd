@@ -4,12 +4,14 @@
 \alias{save_etf_info}
 \title{Save ETF info}
 \usage{
-save_etf_info(obj, stock_name)
+save_etf_info(obj, stock_name, max_days = 3)
 }
 \arguments{
 \item{obj}{object to save}
 
 \item{stock_name}{stock name}
+
+\item{max_days}{max days (i.e. expiry days) before saving again}
 }
 \description{
 Save ETF info

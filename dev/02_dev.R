@@ -10,16 +10,40 @@ golem::document_and_reload()
 # Run the application
 run_app()
 
+## Run tests
+devtools::test()
+
+## Run specific test
+devtools::test(filter = "initialize_log_table")
+devtools::test(filter = "load_portfolio")
+
+## Run all checks
+devtools::check()
+
 ## Bump version number
 usethis::use_version()
 
 ## Add test:
+usethis::use_test("add_stock_modal")
+usethis::use_test("delete_portfolio")
+usethis::use_test("calculate_marked_value")
+usethis::use_test("initialize_log_table")
+usethis::use_test("is")
+usethis::use_test("is_sparindex")
+usethis::use_test("load_portfolio")
+usethis::use_test("map_country_to_region")
 usethis::use_test("vectorized_load_data_and_get_etf_info")
+usethis::use_test("generate_id")
+usethis::use_test("get_source")
 
 ## Renv
 renv::status()
 renv::snapshot()
 
+## Deploy
+rsconnect::deployApp()
+
+## Add dependency
 usethis::use_package("shinydashboard")
 usethis::use_package("htmltools")
 usethis::use_package("DT")
@@ -32,8 +56,15 @@ usethis::use_package("shinycssloaders")
 usethis::use_package("plotly")
 usethis::use_package("TTR")
 usethis::use_package("purrr")
+usethis::use_package("formattable")
 
 remotes::install_github(repo = "https://github.com/kristian-bak/kb.yahoo/")
+
+## Code coverage (Restart first)
+devtools::test_coverage()
+
+## Install before getting coverage (if needed)
+devtools::install()
 
 golem::add_module(name = "overview") # Name of the module
 golem::add_module(name = "name_of_module2") # Name of the module

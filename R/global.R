@@ -22,6 +22,14 @@ global <- quote({
     )
   )
   
+  info_region_other <- as.character(
+    add_info_circle(
+      label = "Other", 
+      placement = "right", 
+      content = "Canada, Australia and other countries"
+    )
+  )
+  
   colors_sector <- colors_geo <- list(
     Difference = formattable::color_tile("lightgreen", "pink")
   )

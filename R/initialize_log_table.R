@@ -4,7 +4,7 @@ initialize_log_table <- function() {
   
   file_name_txt <- "shinyStocksLog.txt"
   
-  file_txt <- paste0("./data/", file_name_txt)
+  file_txt <- paste0("data/portfolios/", file_name_txt)
   
   if (file.exists(file_txt)) {
     return()

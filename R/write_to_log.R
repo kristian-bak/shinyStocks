@@ -13,7 +13,7 @@ write_to_log <- function(user_name, portfolio_name, id) {
   
   file_name_txt <- "shinyStocksLog.txt"
   
-  file_txt <- paste0("./data/", file_name_txt)
+  file_txt <- paste0("data/portfolios/", file_name_txt)
   
   write.table(x = df_log_new, file = file_txt,  
               append = TRUE, quote = FALSE, row.names = FALSE, col.names = FALSE, sep = ";")

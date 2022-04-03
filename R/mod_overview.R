@@ -69,11 +69,24 @@ mod_overview_ui <- function(id){
             icon = icon("spinner")
           )
         )
+      ),
+      shinyjs::hidden(
+        tagList(
+          actionButton(
+            inputId = ns("go_calculate_marked_value"), 
+            label = "Calculate marked value", 
+            icon = icon("calculator")
+          )
+        )
       )
     ), 
     shinyBS::bsTooltip(
       id = ns("go_load"), 
-      title = "The missing values in currency rate and marked value will be replaced with actual data when loading stock data."
+      title = "Load stock price, currency rates and ETF info."
+    ),
+    shinyBS::bsTooltip(
+      id = ns("go_calculate_marked_value"), 
+      title = "Calculations such as marked value, holdings and exposure across geography and sectors will be made. You can adjust your portfolio by add, edit, delete buttons. Additionally, you can modify the fields in the table, for instance number of stocks, and recalculate marked value."
     ),
     htmltools::br(),
     fluidRow(
@@ -114,21 +127,12 @@ mod_overview_server <- function(id){
     
     react_stock_name <- reactive({
       
-      if (is.null(input$type_ticker)) {
-        return()
-      }
-      
-      stock_name <- get_stock_name(
-        ticker = input$type_ticker, 
-        df = df_stocks, 
-        shiny = TRUE
+      # Reactive stock name based on ticker input
+      react_on_ticker_input(
+        df_stocks = df_stocks, 
+        stock_name = input$type_stock, 
+        ticker = input$type_ticker
       )
-      
-      if (length(stock_name) == 0) {
-        return(input$type_stock)
-      } else {
-        return(stock_name)
-      }
       
     })
     
@@ -142,33 +146,14 @@ mod_overview_server <- function(id){
       
     })
     
-    observe({
-      
-      if (!is.null(input$type_stock) & !is.null(input$type_ticker)) {
-        if (input$type_stock == "Danske Bank") {
-          #browser()
-        }
-      }
-      
-    })
-    
     react_ticker <- reactive({
       
-      if (is.null(input$type_stock)) {
-        return()
-      }
-      
-      ticker <- get_ticker(
+      # Reactive ticker code based on stock input
+      react_on_stock_input(
+        df_stocks = df_stocks, 
         stock_name = input$type_stock, 
-        df = df_stocks, 
-        shiny = TRUE
+        ticker = input$type_ticker
       )
-      
-      if (length(ticker) == 0) {
-        return(input$type_ticker)
-      } else {
-        return(ticker)
-      }
       
     })
     
@@ -184,7 +169,7 @@ mod_overview_server <- function(id){
     
     observeEvent(input$go_submit, {
       
-      if (input$type_ticker == "") {
+      if (is_blank(input$type_ticker)) {
         
         shinyWidgets::show_alert(
           title = "Error", 
@@ -208,7 +193,7 @@ mod_overview_server <- function(id){
         
       }
       
-      if (input$select_currency == "") {
+      if (is_blank(input$select_currency)) {
         
         shinyWidgets::show_alert(
           title = "Error", 
@@ -220,7 +205,7 @@ mod_overview_server <- function(id){
         
       }
       
-      if (input$select_etf == "") {
+      if (is_blank(input$select_etf)) {
         
         shinyWidgets::updatePickerInput(
           session = session, 
@@ -232,7 +217,7 @@ mod_overview_server <- function(id){
         
       }
       
-      if (input$select_etf == "No" & input$select_sector == "") {
+      if (input$select_etf == "No" & is_blank(input$select_sector)) {
         
         shinyWidgets::updatePickerInput(
           session = session, 
@@ -273,7 +258,9 @@ mod_overview_server <- function(id){
     
     observeEvent(input$go_delete, {
       
-      str_text <- get_delete_text(rows_selected = input$table_portfolio_rows_selected)
+      str_text <- get_delete_text(
+        rows_selected = input$table_portfolio_rows_selected
+      )
       
       shinyWidgets::ask_confirmation(
         inputId = ns("go_confirm_delete"), 
@@ -289,31 +276,37 @@ mod_overview_server <- function(id){
     
     observeEvent(input$go_confirm_delete, {
       
-      if (!input$go_confirm_delete) {
-        
-        return()
-        
-      }
+      req(input$go_confirm_delete)
       
-      if (is.null(input$table_portfolio_rows_selected)) {
+      rows_selected <- input$table_portfolio_rows_selected
+      
+      delete_everything <- delete_it_all(
+        df_portfolio  = react_var$df_portfolio, 
+        rows_selected = rows_selected
+      )
+      
+      if (delete_everything) {
         
-        react_var$df_portfolio        <- NULL
-        react_var$df_holdings         <- NULL
-        react_var$df_benchmark_geo    <- NULL
-        react_var$df_benchmark_sector <- NULL
-        react_var$df_holdings_agg     <- NULL
-        react_var$df_sector           <- NULL
+        out <- delete_portfolio()
+        
+        react_var$df_portfolio        <- out$df_portfolio
+        react_var$df_holdings         <- out$df_holdings
+        react_var$df_benchmark_geo    <- out$df_benchmark_geo
+        react_var$df_benchmark_sector <- out$df_benchmark_sector
+        react_var$df_sector           <- out$df_sector
         
       } else {
         
-        react_var$df_portfolio        <- react_var$df_portfolio[-input$table_portfolio_rows_selected, ]
-        #react_var$df_holdings         <- NULL
-        #react_var$df_benchmark_geo    <- NULL
-        #react_var$df_benchmark_sector <- NULL
-        #react_var$df_holdings_agg     <- NULL
-        #react_var$df_sector           <- NULL
+        out <- delete_rows_from_portfolio(
+          df_portfolio     = react_var$df_portfolio, 
+          df_closing_price = react_var$df_closing_price, 
+          etf_info         = react_var$etf_info, 
+          rows_selected    = rows_selected
+        ) 
         
-        rownames(react_var$df_portfolio) <- 1:nrow(react_var$df_portfolio)
+        react_var$df_portfolio     <- out$df_portfolio
+        react_var$df_closing_price <- out$df_closing_price
+        react_var$etf_info         <- out$etf_info
         
       }
       
@@ -321,6 +314,7 @@ mod_overview_server <- function(id){
     
     observeEvent(input$go_confirm_loading, {
       
+      # Resetting tables
       react_var$df_holdings         <- NULL
       react_var$df_benchmark_geo    <- NULL
       react_var$df_benchmark_sector <- NULL
@@ -353,10 +347,12 @@ mod_overview_server <- function(id){
       if (!is.null(react_var$df_portfolio)) {
         shinyjs::show(id = "go_load")
         shinyjs::show(id = "go_save")
+        shinyjs::show(id = "go_calculate_marked_value")
         output$panel_analytics <- render_panel_analytics(ns = ns)
       } else {
         shinyjs::hide(id = "go_load")
         shinyjs::hide(id = "go_save")
+        shinyjs::hide(id = "go_calculate_marked_value")
       }
       
     })
@@ -372,6 +368,7 @@ mod_overview_server <- function(id){
       
       n <- nrow(df_portfolio)
       
+      ## Important that updateProgress is defined here
       updateProgress <- function(value = NULL, detail = NULL) {
         if (is.null(value)) {
           value <- progress$getValue()
@@ -382,100 +379,65 @@ mod_overview_server <- function(id){
 
       df_portfolio <- add_rates(data = df_portfolio)
       
+      react_var$df_portfolio <- df_portfolio
+      
       out <- catch_error(
         vectorized_load_data_and_get_etf_info(
-          ticker = df_portfolio$Ticker,
-          stock_name = df_portfolio$Stock,
-          from = df_portfolio$Date, 
-          rate_x_stocks = df_portfolio$Rate * df_portfolio$Stocks, 
+          ticker         = df_portfolio$Ticker,
+          stock_name     = df_portfolio$Stock,
+          from           = df_portfolio$Date, 
+          rate           = df_portfolio$Rate, 
           updateProgress = updateProgress
         )
       )
       
       if (is.null(out$error)) {
         
-        react_var$df_marked_value <- out$value$df_marked_value
+        react_var$df_closing_price <- out$value$df_closing_price
+        react_var$etf_info <- out$value$etf_list
         
       } else {
         
         shinyWidgets::show_alert(
           title = "Error", 
-          text = "Loading failed for one of the stocks. The error most likely occured because the ticker code doesn't exist. The error can also occur if you selected today as first buy date on a day where the stock marked is still open. ", 
+          text = paste0("Loading failed for one of the stocks. The error most likely occured because the selected ticker code doesn't exist. ",
+          "The complete error message is: ", out$error), 
           type = "error"
         )
-        
-        browser()
         
         return()
         
       }
       
-      str_ticker <- stringify(x = df_portfolio$Ticker)
+    })
+    
+    observeEvent(input$go_calculate_marked_value, {
       
-      marked_value_today <- sapply(
-        X = react_var$df_marked_value %>% dplyr::select(-Date), 
-        FUN = get_market_value_today
-      )
-      
-      total_marked_value <- sum(marked_value_today)
-      
-      df_portfolio <- df_portfolio %>% 
-        dplyr::mutate(Region = map_country_to_region(x = Country),
-                      Marked_value = marked_value_today, 
-                      Weight = round(Marked_value / total_marked_value, 3))
-      
-      res <- get_holdings(
-        df_portfolio = df_portfolio, 
-        etf_info = out$value$etf_list
-      )
-      
-      react_var$df_holdings <- res$df_holdings
-      react_var$df_holdings_agg <- res$df_holdings_agg
-      
-      react_var$df_portfolio <- df_portfolio %>% 
-        dplyr::select(-Region)
-      
-      react_var$df_sector <- react_var$df_holdings %>% 
-        dplyr::filter(Sector != "Cash and/or Derivatives")
-      
-      react_var$list_benchmark <- load_benchmark_info(
-        df_portfolio = df_portfolio, 
-        etf_info = out$value$etf_list, 
-        benchmark_name = "iShares MSCI ACWI UCITS ETF", 
-        benchmark_ticker = "IUSQ.DE"
-      )
-      
-      df_benchmark_geo <- compare_with_benchmark_portfolio(
-        df_holdings    = react_var$df_holdings, 
-        benchmark_info = react_var$list_benchmark$country_info, 
-        var = "Region"
-      )
-      
-      df_benchmark_geo <- as.data.frame(df_benchmark_geo)
-      
-      info_region_other <- as.character(
-        add_info_circle(
-          label = "Other", 
-          placement = "right", 
-          content = "Canada, Australia and other countries"
+      if (is.null(react_var$df_closing_price)) {
+        
+        shinyWidgets::show_alert(
+          title = "Error", 
+          text = "You need to load data before calculating marked value", 
+          type = "error"
         )
+        
+        return()
+        
+      }
+      
+      out <- calculate_marked_value(
+        df_portfolio     = react_var$df_portfolio, 
+        etf_info         = react_var$etf_info, 
+        df_closing_price = react_var$df_closing_price
       )
       
-      names(df_benchmark_geo) <- c("Region", "Portfolio", info_benchmark_col, info_diff_col)
-      
-      df_benchmark_geo$Region[df_benchmark_geo$Region == "Other"] <- info_region_other
-      
-      react_var$df_benchmark_geo <- df_benchmark_geo
-      
-      df_benchmark_sector <- compare_with_benchmark_portfolio(
-        df_holdings    = react_var$df_sector, 
-        benchmark_info = react_var$list_benchmark$sector_info %>% dplyr::filter(Sector != "Cash and/or Derivatives"), 
-        var = "Sector"
-      )
-      
-      names(df_benchmark_sector) <- c("Sector", "Portfolio", info_benchmark_col, info_diff_col)
-      
-      react_var$df_benchmark_sector <- df_benchmark_sector
+      react_var$df_portfolio        <- out$df_portfolio
+      react_var$df_holdings         <- out$df_holdings
+      react_var$df_holdings_agg     <- out$df_holdings_agg
+      react_var$df_sector           <- out$df_sector
+      react_var$list_benchmark      <- out$list_benchmark
+      react_var$df_benchmark_geo    <- out$df_benchmark_geo
+      react_var$df_benchmark_sector <- out$df_benchmark_sector
       
     })
     
@@ -488,9 +450,7 @@ mod_overview_server <- function(id){
     
     output$table_benchmark_geo <- formattable::renderFormattable({
       
-      if (is.null(react_var$df_benchmark_geo)) {
-        return()
-      }
+      req(react_var$df_benchmark_geo)
       
       formattable::formattable(react_var$df_benchmark_geo, colors_geo)
       
@@ -498,9 +458,7 @@ mod_overview_server <- function(id){
     
     output$table_benchmark_sector <- formattable::renderFormattable({
       
-      if (is.null(react_var$df_benchmark_sector)) {
-        return()
-      }
+      req(react_var$df_benchmark_sector)
       
       formattable::formattable(react_var$df_benchmark_sector, colors_sector)
       
@@ -589,7 +547,14 @@ mod_overview_server <- function(id){
       
       initialize_log_table()
       
-      if (is_not_null(input$table_saved_portfolios_rows_selected) & is_not_blank(input$type_user) & is_not_blank(input$type_portfolio)) {
+      rows_selected <- input$table_saved_portfolios_rows_selected
+      
+      ## The monkey selected an existing portfolio and tried to create a new one at the same time
+      go_monkey <- is_not_null(rows_selected) & 
+        is_not_blank(input$type_user) & 
+        is_not_blank(input$type_portfolio)
+      
+      if (go_monkey) {
         shinyWidgets::show_alert(
           title = "Error", 
           text = "Either click on a row and thereby save existing portfolio or fill out user name and portfolio name and save new portfolio", 
@@ -599,12 +564,12 @@ mod_overview_server <- function(id){
         
       }
       
-      if (is_not_null(input$table_saved_portfolios_rows_selected)) {
+      if (is_not_null(rows_selected)) {
         
         df_log <- read_log()
         
         id <- df_log %>% 
-          dplyr::slice(input$table_saved_portfolios_rows_selected) %>% 
+          dplyr::slice(rows_selected) %>% 
           dplyr::pull(ID)
         
         update_log(
@@ -682,43 +647,23 @@ mod_overview_server <- function(id){
         dplyr::slice(row_nr) %>% 
         dplyr::pull(ID)
       
-      n <- length(file_name)
-      
-      for (i in 1:n) {
-        
-        f_name <- paste0("./data/", file_name[i], ".rda")
-        
-        df_portfolio_loaded <- load(file = f_name)
-        df_portfolio_loaded <- mget(df_portfolio_loaded)$df_portfolio
-        
-        if (input$check_overwrite_portfolio) {
-          
-          react_var$df_portfolio <- df_portfolio_loaded
-          
-        } else {
-          
-          react_var$df_portfolio <- rbind(
-            react_var$df_portfolio,
-            df_portfolio_loaded
-          )
-          
-        }
-        
-      }
+      react_var$df_portfolio <- load_portfolio(
+        file_name = file_name, 
+        overwrite_portfolio = input$check_overwrite_portfolio, 
+        df = react_var$df_portfolio
+      )
       
       removeModal()
       
     })
     
     output$table_saved_portfolios <- DT::renderDataTable(
-      expr = DT::datatable(react_var$df_saved_portfolios, selection = "single")
+      expr = DT::datatable(react_var$df_saved_portfolios)
     )
     
     output$table_holdings <- DT::renderDataTable({
       
-      if (is.null(react_var$df_holdings_agg)) {
-        return()
-      }
+      req(react_var$df_holdings_agg)
       
       ft <- formattable::formattable(react_var$df_holdings_agg)
       
@@ -762,6 +707,24 @@ mod_overview_server <- function(id){
             inputId = "select_currency", 
             selected = ""
           )
+      }
+      
+    })
+    
+    observe({
+      
+      req(input$select_strategy)
+      
+      if (input$select_strategy == "Buy and hold") {
+        
+        shinyjs::hide(id = "num_stop_loss")
+        shinyjs::hide(id = "num_take_profit")
+        
+      } else {
+        
+        shinyjs::show(id = "num_stop_loss")
+        shinyjs::show(id = "num_take_profit")
+        
       }
       
     })

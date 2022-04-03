@@ -1,0 +1,21 @@
+Sektor performance (US):
+iShares S&P 500 Communication Sector UCITS ETF USD (Acc)
+iShares S&P 500 Consumer Discretionary Sector UCITS ETF USD (Acc)
+iShares S&P 500 Consumer Staples Sector UCITS ETF
+iShares S&P 500 Energy Sector UCITS ETF USD (Acc)
+iShares S&P 500 Financials Sector UCITS ETF USD (Acc)
+iShares S&P 500 Health Care Sector UCITS ETF USD (Acc)
+iShares S&P 500 Industrials Sector UCITS ETF
+iShares S&P 500 Information Technology Sector UCITS ETF USD (Acc)
+iShares S&P 500 Materials Sector UCITS ETF
+iShares S&P 500 Utilities Sector UCITS ETF
+iShares S&P U.S. Oil & Gas Equipment UCITS ETF Aggregate
+
+På næsten samme vis fås for world og europa:
+
+iShares MSCI World Energy Sector UCITS ETF Dist Shareclass
+iShares MSCI Europe Energy Sector UCITS ETF - EUR Acc Class
+
+Large cap vs small cap:
+iShares Core MSCI World UCITS ETF
+iShares MSCI World Small Cap UCITS ETF USD (Acc)

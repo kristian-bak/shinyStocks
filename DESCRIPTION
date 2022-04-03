@@ -1,6 +1,6 @@
 Package: shinyStocks
 Title: An Amazing Shiny App
-Version: 0.6.0
+Version: 0.7.6
 Authors@R: 
     person(given = "firstname",
            family = "lastname",
@@ -12,6 +12,7 @@ Imports:
     config (>= 0.3.1),
     dplyr,
     DT,
+    formattable,
     golem (>= 0.3.1),
     htmltools,
     kb.yahoo,
