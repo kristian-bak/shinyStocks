@@ -107,8 +107,8 @@ summarise_performance <- function(data, dates, name = NULL) {
 }
 
 #' Get sector performance
-#' 
-get_sector_performance <- function() {
+#' @param updateProgress updateProgress function
+get_sector_performance <- function(updateProgress = NULL) {
   
   df_sectors <- get_sector_performance_source()
   
@@ -130,12 +130,15 @@ get_sector_performance <- function() {
       name = df_sectors$Sector[i]
     )
     
-    cat("\r", i, "of", n)
-    flush.console()
+    if (is.function(updateProgress)) {
+      text <- paste("Index ", i, "of", n)
+      updateProgress(detail = text)
+    }
     
   }
   
-  df_out <- do.call("rbind", data_summary)
+  df_out <- do.call("rbind", data_summary) %>% 
+    dplyr::rename(Sector = name)
   
   return(df_out)
   

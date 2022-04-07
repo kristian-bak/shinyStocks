@@ -361,8 +361,6 @@ mod_overview_server <- function(id){
       
       progress <- shiny::Progress$new()
       progress$set(message = "Loading stock data", value = 0)
-
-      on.exit(progress$close())
       
       df_portfolio <- react_var$df_portfolio
       
@@ -396,6 +394,8 @@ mod_overview_server <- function(id){
         react_var$df_closing_price <- out$value$df_closing_price
         react_var$etf_info <- out$value$etf_list
         
+        progress$close()
+        
       } else {
         
         shinyWidgets::show_alert(
@@ -408,6 +408,43 @@ mod_overview_server <- function(id){
         return()
         
       }
+      
+      progress2 <- shiny::Progress$new()
+      progress2$set(message = "Sector performance", value = 0)
+      
+      updateProgress2 <- function(value = NULL, detail = NULL) {
+        if (is.null(value)) {
+          value <- progress2$getValue()
+          # 11 comes from nrow of data.frame in get_sector_performance_source
+          value <- value + (1 / 11)
+        }
+        progress2$set(value = value, detail = detail)
+      }
+      
+      df_sector_performance <- db_sector_performance(updateProgress2)
+      
+      progress2$close()
+      
+      progress3 <- shiny::Progress$new()
+      progress3$set(message = "Geography performance", value = 0)
+      
+      updateProgress3 <- function(value = NULL, detail = NULL) {
+        if (is.null(value)) {
+          value <- progress3$getValue()
+          # 11 comes from length of str_stocks in get_geo_and_stock_type_performance
+          value <- value + (1 / 11)
+        }
+        progress3$set(value = value, detail = detail)
+      }
+      
+      list_geo_performance  <- db_geo_performance(updateProgress3)
+
+      react_var$performance_info <- list(
+        "df_sector_performance" = df_sector_performance, 
+        "list_geo_performance"  = list_geo_performance
+      )
+      
+      on.exit(progress3$close())
       
     })
     
@@ -428,7 +465,8 @@ mod_overview_server <- function(id){
       out <- calculate_marked_value(
         df_portfolio     = react_var$df_portfolio, 
         etf_info         = react_var$etf_info, 
-        df_closing_price = react_var$df_closing_price
+        df_closing_price = react_var$df_closing_price, 
+        performance_info = react_var$performance_info
       )
       
       react_var$df_portfolio        <- out$df_portfolio

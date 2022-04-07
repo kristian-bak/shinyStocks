@@ -1,21 +1,24 @@
 #' Get performance
-#' 
-get_geo_and_stock_type_performance <- function() {
+#' @param updateProgress updateProgress function
+get_geo_and_stock_type_performance <- function(updateProgress = NULL) {
   
   str_stocks <- c("Sparindex INDEX Europa Growth KL", 
                   "Sparindex INDEX Europa Small Cap KL",
                   "Sparindex INDEX Europa Value KL", 
-                  "Sparindex INDEX Globale Aktier KL", 
-                  "Sparindex INDEX DJSI World KL",
+                  #"Sparindex INDEX Globale Aktier KL", 
+                  #"Sparindex INDEX DJSI World KL",
                   "Sparindex INDEX OMX C25 KL",                    
                   "Sparindex INDEX USA Growth KL",                     
                   "Sparindex INDEX USA Small Cap KL",    
                   "Sparindex INDEX USA Value KL", 
-                  "Sparindex INDEX Emerging Markets KL")
+                  "Sparindex INDEX Emerging Markets KL", 
+                  "Sparindex INDEX Japan Growth KL", 
+                  "Sparindex INDEX Japan Small Cap KL", 
+                  "Sparindex INDEX Japan Value KL")
   
   df_geo <- get_sparindex_source() %>% 
-    #dplyr::filter(Stock %in% str_stocks) %>% 
-    dplyr::mutate(area = map_stock_name_to_area(x = Stock), 
+    dplyr::filter(Stock %in% str_stocks) %>% 
+    dplyr::mutate(Region = map_stock_name_to_region(x = Stock), 
                   stock_type = map_stock_name_to_stock_type(x = Stock))
   
   n <- nrow(df_geo)
@@ -36,43 +39,45 @@ get_geo_and_stock_type_performance <- function() {
       name = df_geo$Stock[i]
     )
     
-    cat("\r", i, "of", n)
-    flush.console()
+    if (is.function(updateProgress)) {
+      text <- paste("Index ", i, "of", n)
+      updateProgress(detail = text)
+    }
     
   }
   
   df <- do.call("rbind", data_summary) %>% 
-    dplyr::left_join(df_geo %>% dplyr::select(Stock, area, stock_type), 
+    dplyr::left_join(df_geo %>% dplyr::select(Stock, Region, stock_type), 
                      by = c("name" = "Stock"))
   
-  df_area <- df %>% 
-    dplyr::group_by(area) %>% 
-    dplyr::summarise(ytd = mean(ytd), 
-                     m1 = mean(m1),
-                     m3 = mean(m3),
-                     m6 = mean(m6),
-                     y1 = mean(y1))
+  df_region <- df %>% 
+    dplyr::group_by(Region) %>% 
+    dplyr::summarise(ytd = round(mean(ytd), 2),
+                     m1  = round(mean(m1), 2),
+                     m3  = round(mean(m3), 2),
+                     m6  = round(mean(m6), 2),
+                     y1  = round(mean(y1), 2))
   
   df_stock_type <- df %>% 
     dplyr::group_by(stock_type) %>% 
-    dplyr::summarise(ytd = mean(ytd), 
-                     m1 = mean(m1),
-                     m3 = mean(m3),
-                     m6 = mean(m6),
-                     y1 = mean(y1))
+    dplyr::summarise(ytd = round(mean(ytd), 2),
+                     m1  = round(mean(m1), 2),
+                     m3  = round(mean(m3), 2),
+                     m6  = round(mean(m6), 2),
+                     y1  = round(mean(y1), 2))
   
   out <- list("df" = df, 
-              "df_area" = df_area, 
+              "df_region" = df_region, 
               "df_stock_type" = df_stock_type)
   
   return(out)
   
 }
 
-#' Map stock name to area
+#' Map stock name to region
 #' @param x character string with sparindex stock 
 #' 
-map_stock_name_to_area <- function(x) {
+map_stock_name_to_region <- function(x) {
   
   x[x == "Sparindex INDEX OMX C25 KL"]          <- "Denmark"
   x[x == "Sparindex INDEX Globale Aktier KL"]   <- "Global"

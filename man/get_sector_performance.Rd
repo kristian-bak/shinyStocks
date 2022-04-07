@@ -4,7 +4,10 @@
 \alias{get_sector_performance}
 \title{Get sector performance}
 \usage{
-get_sector_performance()
+get_sector_performance(updateProgress = NULL)
+}
+\arguments{
+\item{updateProgress}{updateProgress function}
 }
 \description{
 Get sector performance

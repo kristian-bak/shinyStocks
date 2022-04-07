@@ -5,10 +5,12 @@
 #' with closing price in DKK
 #' @param benchmark_name character string with benchmark name
 #' @param benchmark_ticker character string with benchmark ticker
+#' @param performance_info list with performance info (sector and geography)
 #' 
 calculate_marked_value <- function(df_portfolio, etf_info, df_closing_price, 
                                    benchmark_name = "iShares MSCI ACWI UCITS ETF", 
-                                   benchmark_ticker = "IUSQ.DE") {
+                                   benchmark_ticker = "IUSQ.DE", 
+                                   performance_info) {
   
   str_ticker        <- stringify(x = df_portfolio$Ticker)
   closing_price_dkk <- df_closing_price %>% dplyr::select(-Date)
@@ -50,7 +52,8 @@ calculate_marked_value <- function(df_portfolio, etf_info, df_closing_price,
   df_benchmark_geo <- compare_with_benchmark_portfolio(
     df_holdings    = df_holdings, 
     benchmark_info = list_benchmark$country_info, 
-    var = "Region"
+    var = "Region", 
+    df_performance = performance_info$list_geo_performance$df_region
   )
   
   info_diff_col <- as.character(
@@ -77,17 +80,28 @@ calculate_marked_value <- function(df_portfolio, etf_info, df_closing_price,
     )
   )
   
-  names(df_benchmark_geo) <- c("Region", "Portfolio", info_benchmark_col, info_diff_col)
+  names(df_benchmark_geo) <- c("Region", "Portfolio", info_benchmark_col, info_diff_col, 
+                               "ytd",
+                               "m1", 
+                               "m3", 
+                               "m6", 
+                               "y1")
   
   df_benchmark_geo$Region[df_benchmark_geo$Region == "Other"] <- info_region_other
   
   df_benchmark_sector <- compare_with_benchmark_portfolio(
     df_holdings    = df_sector, 
     benchmark_info = list_benchmark$sector_info %>% remove_cash(var = Sector), 
-    var = "Sector"
+    var = "Sector", 
+    df_performance = performance_info$df_sector_performance
   )
   
-  names(df_benchmark_sector) <- c("Sector", "Portfolio", info_benchmark_col, info_diff_col)
+  names(df_benchmark_sector) <- c("Sector", "Portfolio", info_benchmark_col, info_diff_col, 
+                                  "ytd",
+                                  "m1", 
+                                  "m3", 
+                                  "m6", 
+                                  "y1")
   
   out <- list(
     "df_portfolio" = df_portfolio,

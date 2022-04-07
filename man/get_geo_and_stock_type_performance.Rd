@@ -4,7 +4,10 @@
 \alias{get_geo_and_stock_type_performance}
 \title{Get performance}
 \usage{
-get_geo_and_stock_type_performance()
+get_geo_and_stock_type_performance(updateProgress = NULL)
+}
+\arguments{
+\item{updateProgress}{updateProgress function}
 }
 \description{
 Get performance

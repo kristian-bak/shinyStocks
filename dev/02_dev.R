@@ -34,7 +34,10 @@ usethis::use_test("load_portfolio")
 usethis::use_test("map_country_to_region")
 usethis::use_test("vectorized_load_data_and_get_etf_info")
 usethis::use_test("generate_id")
+usethis::use_test("get_geo_and_stock_type_performance")
+usethis::use_test("get_sector_performance")
 usethis::use_test("get_source")
+
 
 ## Renv
 renv::status()
