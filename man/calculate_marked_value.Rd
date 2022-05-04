@@ -9,7 +9,8 @@ calculate_marked_value(
   etf_info,
   df_closing_price,
   benchmark_name = "iShares MSCI ACWI UCITS ETF",
-  benchmark_ticker = "IUSQ.DE"
+  benchmark_ticker = "IUSQ.DE",
+  performance_info
 )
 }
 \arguments{
@@ -23,6 +24,8 @@ with closing price in DKK}
 \item{benchmark_name}{character string with benchmark name}
 
 \item{benchmark_ticker}{character string with benchmark ticker}
+
+\item{performance_info}{list with performance info (sector and geography)}
 }
 \description{
 Calculate marked value

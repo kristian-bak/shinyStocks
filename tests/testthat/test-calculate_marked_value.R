@@ -18,10 +18,17 @@ test_that("Test: caculate marked value", {
     rate           = df_portfolio$Rate
   )
   
+  df_sector_performance <- get_sector_performance()
+  list_geo_performance <- get_geo_and_stock_type_performance()
+  
+  performance_info <- list("df_sector_performance" = df_sector_performance, 
+                           "list_geo_performance"  = list_geo_performance)
+  
   out <- calculate_marked_value(
     df_portfolio     = df_portfolio, 
     etf_info         = data_list$etf_list, 
-    df_closing_price = data_list$df_closing_price
+    df_closing_price = data_list$df_closing_price, 
+    performance_info = performance_info
   )
   
   expect_equal(c("df_portfolio", "df_holdings", "df_holdings_agg",     

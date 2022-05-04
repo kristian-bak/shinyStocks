@@ -34,7 +34,10 @@ usethis::use_test("load_portfolio")
 usethis::use_test("map_country_to_region")
 usethis::use_test("vectorized_load_data_and_get_etf_info")
 usethis::use_test("generate_id")
+usethis::use_test("get_geo_and_stock_type_performance")
+usethis::use_test("get_sector_performance")
 usethis::use_test("get_source")
+
 
 ## Renv
 renv::status()
@@ -51,7 +54,7 @@ usethis::use_package("shinyWidgets")
 usethis::use_package("dplyr")
 usethis::use_package("shinyjs")
 usethis::use_package("shinyBS")
-usethis::use_package("kb.yahoo")
+usethis::use_package("kb.yahoo", min_version = "2.2.1")
 usethis::use_package("shinycssloaders")
 usethis::use_package("plotly")
 usethis::use_package("TTR")
@@ -63,7 +66,7 @@ remotes::install_github(repo = "https://github.com/kristian-bak/kb.yahoo/")
 ## Code coverage (Restart first)
 devtools::test_coverage()
 
-## Install before getting coverage (if needed)
+ ## Install before getting coverage (if needed)
 devtools::install()
 
 golem::add_module(name = "overview") # Name of the module
