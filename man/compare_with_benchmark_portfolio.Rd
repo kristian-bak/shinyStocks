@@ -4,7 +4,12 @@
 \alias{compare_with_benchmark_portfolio}
 \title{Compare with benchmark portfolio}
 \usage{
-compare_with_benchmark_portfolio(df_holdings, benchmark_info, var)
+compare_with_benchmark_portfolio(
+  df_holdings,
+  benchmark_info,
+  var,
+  df_performance
+)
 }
 \arguments{
 \item{df_holdings}{data.frame with holdings for your portfolio}
@@ -12,6 +17,8 @@ compare_with_benchmark_portfolio(df_holdings, benchmark_info, var)
 \item{benchmark_info}{benchmark information obtained from load_benchmark_info}
 
 \item{var}{variable name (string) used to compare your portfolio with benchmark}
+
+\item{df_performance}{data.frame with performance statistics}
 }
 \value{
 Summarised data.frame with marked value proportion grouped by `var`
