@@ -54,7 +54,7 @@ usethis::use_package("shinyWidgets")
 usethis::use_package("dplyr")
 usethis::use_package("shinyjs")
 usethis::use_package("shinyBS")
-usethis::use_package("kb.yahoo")
+usethis::use_package("kb.yahoo", min_version = "2.2.1")
 usethis::use_package("shinycssloaders")
 usethis::use_package("plotly")
 usethis::use_package("TTR")
@@ -66,7 +66,7 @@ remotes::install_github(repo = "https://github.com/kristian-bak/kb.yahoo/")
 ## Code coverage (Restart first)
 devtools::test_coverage()
 
-## Install before getting coverage (if needed)
+ ## Install before getting coverage (if needed)
 devtools::install()
 
 golem::add_module(name = "overview") # Name of the module

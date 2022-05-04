@@ -1,3 +1,7 @@
+# shinyStocks 0.7.8
+
+* Updating `kb.yahoo` after bugfix in `quantmod`
+
 # shinyStocks 0.7.7
 
 * Fixing bug related to deleting stock for portfolios where the last element is a stock

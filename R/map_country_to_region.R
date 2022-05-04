@@ -10,11 +10,11 @@ map_country_to_region <- function(x) {
   eu <- c("Austria", "Belgium", "European Union", "Finland", "France", "Germany", 
           "Ireland", "Italy", "Netherlands", "Norway", "Portugal", 
           "Spain", "Sweden", "Switzerland", "United Kingdom",
-          "Greece", "Czech Republic")
+          "Greece", "Czech Republic", "Romania", "Ukraine")
   
   em <- c("Argentina", "Brazil", "Chile", "China", "Colombia", "Hungary", 
           "Hong Kong", "India", "Israel", "Indonesia", 
-          "Korea (South)", "Malaysia", "Mexico", "Morocco",
+          "Korea (South)", "South Korea", "Vietnam", "Malaysia", "Mexico", "Morocco",
           "Russian Federation",
           "Philippines", "Poland",
           "Singapore", "South Africa", "Taiwan", "Thailand", "Turkey", 

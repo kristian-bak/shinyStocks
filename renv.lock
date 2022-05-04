@@ -424,15 +424,15 @@
     },
     "kb.yahoo": {
       "Package": "kb.yahoo",
-      "Version": "1.5.4",
+      "Version": "2.2.1",
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
       "RemoteRepo": "kb.yahoo",
       "RemoteUsername": "kristian-bak",
       "RemoteRef": "HEAD",
-      "RemoteSha": "956f5d2ea86b7c17406b33251a35376bca6f5c91",
-      "Hash": "a1a4cd75350a069db4ef154107db0db9"
+      "RemoteSha": "e456298ef9040732a2507a44716435eee7401a5f",
+      "Hash": "461def8d72603c0885ded439656376db"
     },
     "knitr": {
       "Package": "knitr",
@@ -625,10 +625,10 @@
     },
     "quantmod": {
       "Package": "quantmod",
-      "Version": "0.4.18",
+      "Version": "0.4.20",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "d9dd45d86b5a23984ed50d5c35724702"
+      "Hash": "e8c1ef1a6bc7ea89c1801ab4994b87bb"
     },
     "rappdirs": {
       "Package": "rappdirs",
@@ -776,6 +776,12 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "f895dafd39733c4a70d425f605a832e7"
+    },
+    "shinyStocks": {
+      "Package": "shinyStocks",
+      "Version": "0.7.1",
+      "Source": "unknown",
+      "Hash": "4da7415dcd040e0a15ef12c138aa4e64"
     },
     "shinyWidgets": {
       "Package": "shinyWidgets",
