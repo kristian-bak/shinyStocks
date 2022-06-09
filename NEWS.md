@@ -1,3 +1,7 @@
+# shinyStocks 0.7.9
+
+* Exporting `get_sector_performance_source`
+
 # shinyStocks 0.7.8
 
 * Updating `kb.yahoo` after bugfix in `quantmod`
