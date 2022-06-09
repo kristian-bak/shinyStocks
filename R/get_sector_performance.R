@@ -1,4 +1,5 @@
 #' Sector performance source
+#' @export
 #' 
 get_sector_performance_source <- function() {
   
