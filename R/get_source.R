@@ -83,7 +83,11 @@ get_single_stock_source <- function() {
     "GOMSPACE GROUP",          "GOMX.ST",   "Sweden",  "Information Technology", "Saxo Bank",
     "MATAS",                   "MATAS.CO",  "Denmark", "Consumer Discretionary", "Saxo Bank",
     "NIBE INDUSTRIER CLASS B", "NIBE-B.ST", "Sweden",  "Industrials",            "Saxo Bank",
-    "RIOT BLOCKCHAIN INC",     "RIOT",      "USA",     "Information Technology", "Saxo Bank"
+    "RIOT BLOCKCHAIN INC",     "RIOT",      "USA",     "Information Technology", "Saxo Bank", 
+     "DEMANT",                  "DEMANT.CO", "Denmark", "Health Care",           "Saxo Bank",
+    "ROCKWOOL B",              "ROCK-B.CO", "Denmark", "Industrials",            "Saxo Bank",
+    "VESTAS WIND SYSTEMS",     "VWS.CO",    "Denmark", "Industrials",            "Saxo Bank",
+    "ØRSTED",                  "ORSTED.CO", "Denmark", "Utilities",              "Saxo Bank"
   )
   
 }
